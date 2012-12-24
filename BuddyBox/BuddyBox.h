@@ -16,30 +16,36 @@ static const unsigned int SIGNAL_LOW            = 0;
 
 typedef struct
 {
+    // Public
+    unsigned int signal[MAX_CHANNELS];
+    unsigned int active;
+    
+    // Private
     unsigned int wireSignal;
     float localMaxSample;
     unsigned int sampleCount;
-    unsigned int signalEdgeSampleCount;
-    unsigned int elapsedCounts;
-    unsigned int signalChannel;
-    unsigned int signals[MAX_CHANNELS];
+    unsigned int lastSignalEdgeSampleCount;
+    unsigned int elapsedSampleCounts;
+    unsigned int currentSignalChannel;
 } BuddyBox;
 
 // Public
 void initializeBuddyBox(BuddyBox* bb);
 void readBufferIntoBuddyBox(BuddyBox* bb, float* buffer, unsigned int bufferSize);
+void disconnectBuddyBox(BuddyBox *bb);
 
 // Private
 float getBuddyBoxSampleMagnitude(float sample);
-float getTmpLocalMax(float bufferSampleMagnitude, float tmpLocalMaxSample);
+float getBuddyBoxTmpLocalMax(float bufferSampleMagnitude, float tmpLocalMaxSample);
 unsigned int isBuddyBoxSignalEdge(BuddyBox *bb, float bufferSampleMagnitude);
-unsigned int isBuddyBoxSignalHigh(BuddyBox *bb, float bufferSampleMagnitude);
+unsigned int isBuddyBoxRawSignalHigh(BuddyBox *bb, float bufferSampleMagnitude);
 void processBuddyBoxSignalEdge(BuddyBox *bb);
 void updateBuddyBoxElapsedCounts(BuddyBox *bb);
 unsigned int isBuddyBoxWireSignalHigh(BuddyBox *bb);
 void processHighBuddyBoxWireSignal(BuddyBox *bb);
 unsigned int isBuddyBoxSynchroFrameEncountered(BuddyBox *bb);
-void processBuddyBoxPacket(BuddyBox *bb);
+void outputBuddyBoxSignal(BuddyBox *bb);
+void processNextBuddyBoxPacket(BuddyBox *bb);
 void targetNextBuddyBoxPacketChannel(BuddyBox *bb);
 
 #endif

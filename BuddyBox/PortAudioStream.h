@@ -15,18 +15,21 @@
 #define CHECK_UNDERFLOW (0) // Not checking for underflow
 
 #define PA_SAMPLE_TYPE      paFloat32
-#define PA_INPUT_DEVICE     Pa_GetDefaultInputDevice()//1 // Line In - could also be Pa_GetDefaultInputDevice()
+#define PA_INPUT_DEVICE     1 // Line In - could also be Pa_GetDefaultInputDevice()
 
 static const unsigned int SAMPLE_RATE           = 44100;
 static const unsigned int FRAMES_PER_BUFFER     = 1024;
 static const unsigned int NUM_CHANNELS          = 1;
-static const unsigned int SAMPLE_SIZE           = 4;
+static const unsigned int SAMPLE_SIZE           = sizeof(float);
 
 typedef struct
 {
-    PaStream* stream;
+    // Public
     float* bufferedSamples;
     unsigned int bufferSize;
+    
+    // Private
+    PaStream* stream;
 } PortAudioStream;
 
 // Public
@@ -38,8 +41,8 @@ void closePortAudioStream(PortAudioStream *pas);
 void allocatePortAudioStreamBuffer(PortAudioStream *pas);
 void initializePortAudio(PortAudioStream *pas);
 void openPortAudioStream(PaStreamParameters outputParameters, PaStreamParameters inputParameters, PortAudioStream *pas);
-void configurePortAudioInputParameters(PaStreamParameters *inputParameters_p);
-void configurePortAudioOutputParameters(PaStreamParameters *outputParameters_p);
+void configurePortAudioInputParameters(PaStreamParameters *inputParameters);
+void configurePortAudioOutputParameters(PaStreamParameters *outputParameters);
 
 unsigned int handlePortAudioStreamOverflow(PortAudioStream *pas, PaError err);
 void handlePortAudioStreamError(PortAudioStream *pas, PaError err);

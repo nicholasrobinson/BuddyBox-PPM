@@ -18,7 +18,7 @@ int main(int argc, const char * argv[])
     initializePortAudioStream(&pas);
     initializeBuddyBox(&bb);
     
-    while(readPortAudioStream(&pas))
+    while(bb.active && readPortAudioStream(&pas))
         readBufferIntoBuddyBox(&bb, pas.bufferedSamples, pas.bufferSize);
     
     closePortAudioStream(&pas);

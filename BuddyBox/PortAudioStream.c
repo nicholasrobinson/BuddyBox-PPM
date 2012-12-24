@@ -64,22 +64,22 @@ void openPortAudioStream(PaStreamParameters outputParameters, PaStreamParameters
         handlePortAudioStreamError(pas, err);
 }
 
-void configurePortAudioInputParameters(PaStreamParameters *inputParameters_p)
+void configurePortAudioInputParameters(PaStreamParameters *inputParameters)
 {
-    inputParameters_p->device = PA_INPUT_DEVICE;
-    inputParameters_p->channelCount = NUM_CHANNELS;
-    inputParameters_p->sampleFormat = PA_SAMPLE_TYPE;
-    inputParameters_p->suggestedLatency = Pa_GetDeviceInfo(inputParameters_p->device)->defaultHighInputLatency ;
-    inputParameters_p->hostApiSpecificStreamInfo = NULL;
+    inputParameters->device = PA_INPUT_DEVICE;
+    inputParameters->channelCount = NUM_CHANNELS;
+    inputParameters->sampleFormat = PA_SAMPLE_TYPE;
+    inputParameters->suggestedLatency = Pa_GetDeviceInfo(inputParameters->device)->defaultHighInputLatency ;
+    inputParameters->hostApiSpecificStreamInfo = NULL;
 }
 
-void configurePortAudioOutputParameters(PaStreamParameters *outputParameters_p)
+void configurePortAudioOutputParameters(PaStreamParameters *outputParameters)
 {
-    outputParameters_p->device = Pa_GetDefaultOutputDevice(); // default output device
-    outputParameters_p->channelCount = NUM_CHANNELS;
-    outputParameters_p->sampleFormat = PA_SAMPLE_TYPE;
-    outputParameters_p->suggestedLatency = Pa_GetDeviceInfo(outputParameters_p->device)->defaultHighOutputLatency;
-    outputParameters_p->hostApiSpecificStreamInfo = NULL;
+    outputParameters->device = Pa_GetDefaultOutputDevice(); // default output device
+    outputParameters->channelCount = NUM_CHANNELS;
+    outputParameters->sampleFormat = PA_SAMPLE_TYPE;
+    outputParameters->suggestedLatency = Pa_GetDeviceInfo(outputParameters->device)->defaultHighOutputLatency;
+    outputParameters->hostApiSpecificStreamInfo = NULL;
 }
 
 unsigned int readPortAudioStream(PortAudioStream *pas)
