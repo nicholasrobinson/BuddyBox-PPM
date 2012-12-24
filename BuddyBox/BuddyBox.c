@@ -12,12 +12,14 @@
 
 void initializeBuddyBox(BuddyBox *bb)
 {
-    printf("Initializing Buddy Box\n");
+    printf("Initializing Buddy Box...\n");
     
     bb->wireSignal                  = SIGNAL_LOW;
+    bb->channelCount                = 0;
     bb->active                      = 1;
     
     bb->localMaxSample              = 0.0f;
+    bb->localMaxElapsedCount        = 0;
     bb->sampleCount                 = 0;
     bb->lastSignalEdgeSampleCount   = 0;
     bb->elapsedSampleCounts         = 0;
@@ -27,24 +29,42 @@ void initializeBuddyBox(BuddyBox *bb)
 void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize)
 {
     float tmpLocalMaxSample, bufferSampleMagnitude;
-    unsigned int i;
+    unsigned int i, tmpLocalMaxElapsedCount;
+    
+    detectBuddyBoxTimeout(bb, buffer, bufferSize);
     
     tmpLocalMaxSample = 0.0f;
+    tmpLocalMaxElapsedCount = 0;
     for (i = 0; bb->active && i < bufferSize; i++)
     {
         bufferSampleMagnitude = getBuddyBoxSampleMagnitude(buffer[i]);
         if (isBuddyBoxSignalEdge(bb, bufferSampleMagnitude))
             processBuddyBoxSignalEdge(bb);
-        tmpLocalMaxSample = getBuddyBoxTmpLocalMax(bufferSampleMagnitude, tmpLocalMaxSample);
+        tmpLocalMaxSample = getBuddyBoxTmpLocalMaxSample(bufferSampleMagnitude, tmpLocalMaxSample);
+        tmpLocalMaxElapsedCount = getBuddyBoxTmpLocalMaxElapsedCount(bb, tmpLocalMaxElapsedCount, bufferSize);
         bb->sampleCount++;
     }
     bb->localMaxSample = tmpLocalMaxSample; // Allow local max to change (after a reasonable one is found)
+    bb->localMaxElapsedCount = tmpLocalMaxElapsedCount; // Allow local max elapsed to change (after a reasonable one is found)
 }
 
 void disconnectBuddyBox(BuddyBox *bb)
 {
     bb->active = 0;
-    printf("Buddy Box Disconnected\n");
+    printf("Buddy Box Disconnected...\n");
+}
+
+void detectBuddyBoxTimeout(BuddyBox *bb, float* buffer, unsigned int bufferSize)
+{
+    unsigned int i;
+    for (i = 0; i < bufferSize; i++)
+        if (buffer[i] != 0.0f)
+            return;
+    if (!isBuddyBoxCalibrating(bb))
+    {
+        printf("Timeout...\n");
+        disconnectBuddyBox(bb);
+    }
 }
 
 float getBuddyBoxSampleMagnitude(float sample)
@@ -52,9 +72,14 @@ float getBuddyBoxSampleMagnitude(float sample)
     return fabs(sample);
 }
 
-float getBuddyBoxTmpLocalMax(float bufferSampleMagnitude, float tmpLocalMaxSample)
+float getBuddyBoxTmpLocalMaxSample(float bufferSampleMagnitude, float tmpLocalMaxSample)
 {
     return (bufferSampleMagnitude > tmpLocalMaxSample) ? bufferSampleMagnitude : tmpLocalMaxSample;
+}
+
+float getBuddyBoxTmpLocalMaxElapsedCount(BuddyBox *bb, unsigned int tmpLocalMaxElapsedCount, unsigned int bufferSize)
+{
+    return (bb->elapsedSampleCounts > tmpLocalMaxElapsedCount && bb->elapsedSampleCounts < bufferSize) ? bb->elapsedSampleCounts : tmpLocalMaxElapsedCount;
 }
 
 unsigned int isBuddyBoxSignalEdge(BuddyBox *bb, float bufferSampleMagnitude)
@@ -90,7 +115,10 @@ void processBuddyBoxSignalEdge(BuddyBox *bb)
 
 void updateBuddyBoxElapsedCounts(BuddyBox *bb)
 {
-    bb->elapsedSampleCounts = bb->sampleCount - bb->lastSignalEdgeSampleCount;
+    if (bb->lastSignalEdgeSampleCount > bb->sampleCount)
+        bb->elapsedSampleCounts = bb->sampleCount + (MAXUINT - bb->lastSignalEdgeSampleCount);
+    else
+        bb->elapsedSampleCounts = bb->sampleCount - bb->lastSignalEdgeSampleCount;
 }
 
 unsigned int isBuddyBoxWireSignalHigh(BuddyBox *bb)
@@ -101,34 +129,70 @@ unsigned int isBuddyBoxWireSignalHigh(BuddyBox *bb)
 void processHighBuddyBoxWireSignal(BuddyBox *bb)
 {    
     if (isBuddyBoxSynchroFrameEncountered(bb))
-    {
-        outputBuddyBoxSignal(bb);
-        processNextBuddyBoxPacket(bb);
-    }
-    else if (bb->currentSignalChannel < MAX_CHANNELS)
+        processBuddyBoxSynchroFrame(bb);
+    else if (isBuddyBoxChannelValid(bb))
         targetNextBuddyBoxPacketChannel(bb);
-    else
+    else if (!isBuddyBoxCalibrating(bb))
+    {
+        printf("Invalid Channel Received...\n");
         disconnectBuddyBox(bb);
+    }
 }
 
 unsigned int isBuddyBoxSynchroFrameEncountered(BuddyBox *bb)
 {
-    return (bb->elapsedSampleCounts > SYNCHRO_FRAME_WIDTH);
+    return (bb->currentSignalChannel >= MIN_CHANNELS && (bb->elapsedSampleCounts > bb->localMaxElapsedCount / 2));
 }
 
-void outputBuddyBoxSignal(BuddyBox *bb)
+void processBuddyBoxSynchroFrame(BuddyBox *bb)
+{
+    if (!isBuddyBoxCalibrating(bb))
+    {
+        if (isBuddyBoxChannelCountValid(bb))
+            processBuddyBoxPacket(bb);
+        else
+        {
+            printf("Channel Count has Changed...\n");
+            disconnectBuddyBox(bb);
+        }
+    }
+    storeBuddyBoxChannelCount(bb);
+    targetNextBuddyBoxPacket(bb);
+}
+
+void processBuddyBoxPacket(BuddyBox *bb)
 {
     unsigned int i;
     
     for (i = 0; i < MAX_CHANNELS; i++)
         if (i < bb->currentSignalChannel)
             printf("%d\t,", bb->signal[i]);
-    printf("%d\n", bb->sampleCount);
+    printf("%u\n", bb->sampleCount);
 }
 
-void processNextBuddyBoxPacket(BuddyBox *bb)
+void storeBuddyBoxChannelCount(BuddyBox *bb)
+{
+    bb->channelCount = bb->currentSignalChannel - 1;
+}
+
+void targetNextBuddyBoxPacket(BuddyBox *bb)
 {
     bb->currentSignalChannel = 0;
+}
+
+unsigned int isBuddyBoxChannelValid(BuddyBox *bb)
+{
+    return (bb->currentSignalChannel < MAX_CHANNELS);
+}
+
+unsigned int isBuddyBoxCalibrating(BuddyBox *bb)
+{
+    return (bb->sampleCount < CALIBRATION_SAMPLES);
+}
+
+unsigned int isBuddyBoxChannelCountValid(BuddyBox *bb)
+{
+    return (bb->currentSignalChannel - 1 == bb->channelCount);
 }
 
 void targetNextBuddyBoxPacketChannel(BuddyBox *bb)
