@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		2E2C577A1688222C007DB6F5 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C57791688222C007DB6F5 /* main.c */; };
 		2E2C577C1688222C007DB6F5 /* BuddyBox.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2E2C577B1688222C007DB6F5 /* BuddyBox.1 */; };
+		2E2C578316882281007DB6F5 /* PortAudioStream.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C578216882281007DB6F5 /* PortAudioStream.c */; };
+		2E2C578A1688279E007DB6F5 /* libportaudio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E2C57891688279E007DB6F5 /* libportaudio.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -28,6 +30,10 @@
 		2E2C57751688222C007DB6F5 /* BuddyBox */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BuddyBox; sourceTree = BUILT_PRODUCTS_DIR; };
 		2E2C57791688222C007DB6F5 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
 		2E2C577B1688222C007DB6F5 /* BuddyBox.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = BuddyBox.1; sourceTree = "<group>"; };
+		2E2C578216882281007DB6F5 /* PortAudioStream.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = PortAudioStream.c; sourceTree = "<group>"; };
+		2E2C578416882291007DB6F5 /* PortAudioStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PortAudioStream.h; sourceTree = "<group>"; };
+		2E2C57891688279E007DB6F5 /* libportaudio.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libportaudio.dylib; path = /opt/local/lib/libportaudio.dylib; sourceTree = "<absolute>"; };
+		2E2C578C168827F2007DB6F5 /* portaudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = portaudio.h; path = ../../../../../../opt/local/include/portaudio.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +41,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2E2C578A1688279E007DB6F5 /* libportaudio.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -46,6 +53,7 @@
 			children = (
 				2E2C57781688222C007DB6F5 /* BuddyBox */,
 				2E2C57761688222C007DB6F5 /* Products */,
+				2E2C578B168827B2007DB6F5 /* Libraries */,
 			);
 			sourceTree = "<group>";
 		};
@@ -62,7 +70,19 @@
 			children = (
 				2E2C57791688222C007DB6F5 /* main.c */,
 				2E2C577B1688222C007DB6F5 /* BuddyBox.1 */,
+				2E2C578216882281007DB6F5 /* PortAudioStream.c */,
+				2E2C578416882291007DB6F5 /* PortAudioStream.h */,
 			);
+			path = BuddyBox;
+			sourceTree = "<group>";
+		};
+		2E2C578B168827B2007DB6F5 /* Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				2E2C57891688279E007DB6F5 /* libportaudio.dylib */,
+				2E2C578C168827F2007DB6F5 /* portaudio.h */,
+			);
+			name = Libraries;
 			path = BuddyBox;
 			sourceTree = "<group>";
 		};
@@ -118,6 +138,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				2E2C577A1688222C007DB6F5 /* main.c in Sources */,
+				2E2C578316882281007DB6F5 /* PortAudioStream.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +148,7 @@
 		2E2C577D1688222C007DB6F5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -156,7 +177,7 @@
 		2E2C577E1688222C007DB6F5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
+				ALWAYS_SEARCH_USER_PATHS = YES;
 				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -178,6 +199,11 @@
 		2E2C57801688222C007DB6F5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -185,6 +211,11 @@
 		2E2C57811688222C007DB6F5 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)\"",
+					/opt/local/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
