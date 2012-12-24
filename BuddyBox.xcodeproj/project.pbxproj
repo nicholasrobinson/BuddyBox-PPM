@@ -1,0 +1,215 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2E2C577A1688222C007DB6F5 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C57791688222C007DB6F5 /* main.c */; };
+		2E2C577C1688222C007DB6F5 /* BuddyBox.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 2E2C577B1688222C007DB6F5 /* BuddyBox.1 */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		2E2C57731688222B007DB6F5 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+				2E2C577C1688222C007DB6F5 /* BuddyBox.1 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		2E2C57751688222C007DB6F5 /* BuddyBox */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BuddyBox; sourceTree = BUILT_PRODUCTS_DIR; };
+		2E2C57791688222C007DB6F5 /* main.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		2E2C577B1688222C007DB6F5 /* BuddyBox.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = BuddyBox.1; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		2E2C57721688222B007DB6F5 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		2E2C576A1688222B007DB6F5 = {
+			isa = PBXGroup;
+			children = (
+				2E2C57781688222C007DB6F5 /* BuddyBox */,
+				2E2C57761688222C007DB6F5 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		2E2C57761688222C007DB6F5 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2E2C57751688222C007DB6F5 /* BuddyBox */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		2E2C57781688222C007DB6F5 /* BuddyBox */ = {
+			isa = PBXGroup;
+			children = (
+				2E2C57791688222C007DB6F5 /* main.c */,
+				2E2C577B1688222C007DB6F5 /* BuddyBox.1 */,
+			);
+			path = BuddyBox;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		2E2C57741688222B007DB6F5 /* BuddyBox */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2E2C577F1688222C007DB6F5 /* Build configuration list for PBXNativeTarget "BuddyBox" */;
+			buildPhases = (
+				2E2C57711688222B007DB6F5 /* Sources */,
+				2E2C57721688222B007DB6F5 /* Frameworks */,
+				2E2C57731688222B007DB6F5 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BuddyBox;
+			productName = BuddyBox;
+			productReference = 2E2C57751688222C007DB6F5 /* BuddyBox */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		2E2C576C1688222B007DB6F5 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0450;
+				ORGANIZATIONNAME = "Nicholas Robinson";
+			};
+			buildConfigurationList = 2E2C576F1688222B007DB6F5 /* Build configuration list for PBXProject "BuddyBox" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 2E2C576A1688222B007DB6F5;
+			productRefGroup = 2E2C57761688222C007DB6F5 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				2E2C57741688222B007DB6F5 /* BuddyBox */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		2E2C57711688222B007DB6F5 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2E2C577A1688222C007DB6F5 /* main.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		2E2C577D1688222C007DB6F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		2E2C577E1688222C007DB6F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		2E2C57801688222C007DB6F5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		2E2C57811688222C007DB6F5 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		2E2C576F1688222B007DB6F5 /* Build configuration list for PBXProject "BuddyBox" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2E2C577D1688222C007DB6F5 /* Debug */,
+				2E2C577E1688222C007DB6F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2E2C577F1688222C007DB6F5 /* Build configuration list for PBXNativeTarget "BuddyBox" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2E2C57801688222C007DB6F5 /* Debug */,
+				2E2C57811688222C007DB6F5 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 2E2C576C1688222B007DB6F5 /* Project object */;
+}
