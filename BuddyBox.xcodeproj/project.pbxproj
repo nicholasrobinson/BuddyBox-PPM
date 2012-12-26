@@ -12,6 +12,7 @@
 		2E2C578316882281007DB6F5 /* PortAudioStream.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C578216882281007DB6F5 /* PortAudioStream.c */; };
 		2E2C578A1688279E007DB6F5 /* libportaudio.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2E2C57891688279E007DB6F5 /* libportaudio.dylib */; };
 		2E2C578F16882B89007DB6F5 /* BuddyBox.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C578E16882B89007DB6F5 /* BuddyBox.c */; };
+		2E2C5795168A7F78007DB6F5 /* makefile in Sources */ = {isa = PBXBuildFile; fileRef = 2E2C5794168A7F78007DB6F5 /* makefile */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,6 +38,8 @@
 		2E2C578C168827F2007DB6F5 /* portaudio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = portaudio.h; path = ../../../../../../opt/local/include/portaudio.h; sourceTree = "<group>"; };
 		2E2C578D16882B7A007DB6F5 /* BuddyBox.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BuddyBox.h; sourceTree = "<group>"; };
 		2E2C578E16882B89007DB6F5 /* BuddyBox.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = BuddyBox.c; sourceTree = "<group>"; };
+		2E2C5794168A7F78007DB6F5 /* makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = makefile; sourceTree = "<group>"; };
+		2E2C5798168A940E007DB6F5 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -71,6 +74,8 @@
 		2E2C57781688222C007DB6F5 /* BuddyBox */ = {
 			isa = PBXGroup;
 			children = (
+				2E2C5798168A940E007DB6F5 /* README.md */,
+				2E2C5794168A7F78007DB6F5 /* makefile */,
 				2E2C57791688222C007DB6F5 /* main.c */,
 				2E2C577B1688222C007DB6F5 /* BuddyBox.1 */,
 				2E2C578216882281007DB6F5 /* PortAudioStream.c */,
@@ -145,6 +150,7 @@
 				2E2C577A1688222C007DB6F5 /* main.c in Sources */,
 				2E2C578316882281007DB6F5 /* PortAudioStream.c in Sources */,
 				2E2C578F16882B89007DB6F5 /* BuddyBox.c in Sources */,
+				2E2C5795168A7F78007DB6F5 /* makefile in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -245,6 +251,7 @@
 				2E2C57811688222C007DB6F5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
