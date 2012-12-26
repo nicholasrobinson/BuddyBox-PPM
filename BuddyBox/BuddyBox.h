@@ -11,8 +11,8 @@
 
 #define MAXUINT (0xffffffff)
 
-static const unsigned int MIN_CHANNELS                  = 4;
-static const unsigned int MAX_CHANNELS                  = 10;
+static const unsigned int MIN_CHANNELS                  = 5;
+static const unsigned int MAX_CHANNELS                  = 20;
 static const unsigned int SIGNAL_HIGH                   = 1;
 static const unsigned int SIGNAL_LOW                    = 0;
 static const unsigned int CALIBRATION_PACKETS           = 50;    // @50Hz -> ~1 second calibrating
