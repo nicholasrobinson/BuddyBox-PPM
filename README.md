@@ -25,7 +25,7 @@ This driver allows a JR (Japan Remove Control Co., Ltd.), Spektrum (Horizon Hobb
 
 ### Execution
 
-    $ ./BuddyBox
+    $ ./BuddyBox-PPM
     
 ### Sample Output
 

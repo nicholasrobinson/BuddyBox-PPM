@@ -11,9 +11,9 @@ ifeq ($(OS),Darwin)
 	LINK_FLAGS:=$(LINK_FLAGS) -framework CoreAudio -framework AudioToolbox -framework AudioUnit -framework CoreServices
 endif
 
-all: BuddyBox
+all: BuddyBox-PPM
 
-BuddyBox: $(HEADERS) $(OBJS) $(LIBS)
+BuddyBox-PPM: $(HEADERS) $(OBJS) $(LIBS)
 	$(CC) $(LINK_FLAGS) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
 
 objs:
@@ -24,5 +24,5 @@ objs/%.o: src/%.c $(HEADERS) objs
 	$(CC) $(CFLAGS) -I $(INCLUDES) -c -o $@ $<
 
 clean:
-	-rm -f BuddyBox
+	-rm -f BuddyBox-PPM
 	-rm -rf objs
