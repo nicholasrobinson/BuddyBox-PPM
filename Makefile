@@ -1,7 +1,7 @@
 CFLAGS:=-Wall
-CFILES:=$(wildcard *.c)
-OBJS:=$(patsubst %.c,%.o,$(CFILES))
-HEADERS:=$(wildcard *.h)
+CFILES:=$(wildcard src/*.c)
+OBJS:=$(patsubst src/%.c,objs/%.o,$(CFILES))
+HEADERS:=$(wildcard src/*.h)
 INCLUDES:=/opt/local/include
 LIBS:=$(wildcard $(OS)/*.a)
 LINK_FLAGS:=/opt/local/lib/libportaudio.a
@@ -17,11 +17,12 @@ BuddyBox: $(HEADERS) $(OBJS) $(LIBS)
 	$(CC) $(LINK_FLAGS) $(CFLAGS) -o $@ $(OBJS) $(LIBS)
 
 objs:
-	-rm *.o
+	-rm -rf objs
+	mkdir objs
 
-%.o: %.c $(HEADERS)
+objs/%.o: src/%.c $(HEADERS) objs
 	$(CC) $(CFLAGS) -I $(INCLUDES) -c -o $@ $<
 
 clean:
 	-rm -f BuddyBox
-	-rm -f *.o
+	-rm -rf objs
