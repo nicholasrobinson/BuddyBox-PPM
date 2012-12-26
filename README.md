@@ -4,7 +4,7 @@ by Nicholas Robinson
 
 ## Overview
 
-This driver allows a JR (Japan Remove Control Co., Ltd.), Spektrum (Horizon Hobby, Inc.) or Futaba (Hobbico, Inc.) radio transmitter to communicate with a PC (Windows / OS X / Linux). It is written in ANSI C, leveraging the excellent PortAudio Portable Cross-Platform Audio I/O, and facilitates one-way communication from the radio transmitter to the PC via any available audio input device (microphone-in, line-in etc), using output from the transmitter's trainer port.
+This driver allows a JR (Japan Remove Control Co., Ltd.), Spektrum (Horizon Hobby, Inc.) or Futaba (Hobbico, Inc.) radio transmitter to communicate with a PC (Windows / OS X / Linux). It is written in ANSI C, leveraging the excellent PortAudio Portable Cross-Platform Audio I/O library, and facilitates one-way communication from the radio transmitter to the PC via any available audio input device (microphone-in, line-in etc), using output from the transmitter's trainer port.
 
 ## Requirements
 
@@ -17,8 +17,8 @@ This driver allows a JR (Japan Remove Control Co., Ltd.), Spektrum (Horizon Hobb
 
 ## Installation
 
-    $ git clone xxx
-    $ cd xxx
+    $ git clone git://github.com/nicholasrobinson/BuddyBox-PPM.git
+    $ cd BuddyBox-PPM
     $ make clean && make
     
 ## Usage
@@ -47,7 +47,7 @@ This driver allows a JR (Japan Remove Control Co., Ltd.), Spektrum (Horizon Hobb
     
 ### Sample Output Explanation
 
-    The above output indicates the raw output of 9 channels from my JR PCM9xII Tx, represented by the first 9 columns. The final column is an incremental sequential packet number.
+The above output indicates the raw output of 9 channels from my JR PCM9xII Tx, represented by the first 9 columns. The final column is an incremental sequential packet number.
 
 ## References
     
@@ -58,7 +58,8 @@ This driver allows a JR (Japan Remove Control Co., Ltd.), Spektrum (Horizon Hobb
 
 # Notes
 
-* You may need to tune "SAMPLE_RATE" in "PortAudioStream.h" to suit your audio input device. A higher sample rate will yield a higher resolution on each channel's output. For example 192kHz sample rate -> resolution of ~154 per channel, 44.1kHz sample rate -> resolution of ~36 per channel
+* You may need to change "PA_INPUT_DEVICE" in "PortAudioStream.h" to suit your audio input  device.
+* You may need to tune "SAMPLE_RATE" in "PortAudioStream.h" to suit your audio input device. A higher sample rate will yield a higher resolution on each channel's output. For example 44.1kHz sample rate -> resolution of ~36 per channel, whereas 192kHz sample rate -> resolution of ~154 per channel
 * Depending on your sound card's characteristics, you may need to tweak "BAD_PACKET_THRESHOLD" and "SAMPLE_NOISE_THRESHOLD" in "BuddyBox.h"
 * Whilst this driver and the supplied "example" implementation could be used directly it is perhaps most usefully placed in a separate thread, sharing a pointer to "pas.signal", allowing real-time access to each channel's output. Examples coming soon...
 
