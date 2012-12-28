@@ -11,15 +11,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-void initializePortAudioStream(PortAudioStream *pas)
+void initializePortAudioStream(PortAudioStream *pas, unsigned int sampleRate)
 {
     PaStreamParameters inputParameters, outputParameters;
+    
+    pas->sampleRate = sampleRate;
     
     allocatePortAudioStreamBuffer(pas);
     initializePortAudio(pas);
     configurePortAudioInputParameters(&inputParameters);
     configurePortAudioOutputParameters(&outputParameters);
-    openPortAudioStream(outputParameters, inputParameters, pas);
+    openPortAudioStream(pas, outputParameters, inputParameters);
 }
 
     void allocatePortAudioStreamBuffer(PortAudioStream *pas)
@@ -81,7 +83,7 @@ void initializePortAudioStream(PortAudioStream *pas)
         outputParameters->hostApiSpecificStreamInfo = NULL;
     }
 
-    void openPortAudioStream(PaStreamParameters outputParameters, PaStreamParameters inputParameters, PortAudioStream *pas)
+    void openPortAudioStream(PortAudioStream *pas, PaStreamParameters outputParameters, PaStreamParameters inputParameters)
     {
         PaError err;
         
@@ -89,7 +91,7 @@ void initializePortAudioStream(PortAudioStream *pas)
             &pas->stream,
             &inputParameters,
             &outputParameters,
-            SAMPLE_RATE,
+            pas->sampleRate,
             FRAMES_PER_BUFFER,
             paClipOff,          // we won't output out of range samples so don't bother clipping them
             NULL,               // no callback, use blocking API

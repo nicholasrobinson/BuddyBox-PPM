@@ -6,11 +6,14 @@
 //  Copyright (c) 2012 Nicholas Robinson. All rights reserved.
 //
 
-#include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdio.h>
 #include "PortAudioStream.h"
 #include "BuddyBox.h"
+
+static const unsigned int DEFAULT_SAMPLE_RATE = 124000;
 
 static unsigned int running = 1;
 
@@ -26,7 +29,8 @@ int main(int argc, const char * argv[])
     signal(SIGKILL, intHandler);
     signal(SIGINT, intHandler);
     
-    initializePortAudioStream(&pas);
+    unsigned int sampleRate = (argc > 1) ? (unsigned int) strtol(argv[1], NULL, 0) : DEFAULT_SAMPLE_RATE;
+    initializePortAudioStream(&pas, sampleRate);
     
     while(running)
     {
