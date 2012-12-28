@@ -33,7 +33,10 @@ int main(int argc, const char * argv[])
         initializeBuddyBox(&bb);
         
         while(running && bb.active && readPortAudioStream(&pas))
+        {
             readBufferIntoBuddyBox(&bb, pas.bufferedSamples, pas.bufferSize);
+            writePortAudioStream(&pas);
+        }
         
         sleep(1);
     }

@@ -40,10 +40,10 @@ void initializePortAudioStream(PortAudioStream *pas)
         
         err = Pa_Initialize();
         if(err != paNoError)
-            handlePortAudioStreamError(pas, err);
+            handlePortAudioStreamInitializationError(pas, err);
     }
 
-        void handlePortAudioStreamError(PortAudioStream *pas, PaError err)
+        void handlePortAudioStreamInitializationError(PortAudioStream *pas, PaError err)
         {
             terminatePortAudioStream(pas);
             fprintf(stderr, "An error occured while using the portaudio stream\n");
@@ -96,10 +96,10 @@ void initializePortAudioStream(PortAudioStream *pas)
             NULL                // no callback, so no callback userData
         );
         if(err != paNoError)
-            handlePortAudioStreamError(pas, err);
+            handlePortAudioStreamInitializationError(pas, err);
         err = Pa_StartStream(pas->stream);
         if(err != paNoError)
-            handlePortAudioStreamError(pas, err);
+            handlePortAudioStreamInitializationError(pas, err);
     }
 
 unsigned int readPortAudioStream(PortAudioStream *pas)
@@ -108,12 +108,12 @@ unsigned int readPortAudioStream(PortAudioStream *pas)
     
     err = Pa_ReadStream(pas->stream, pas->bufferedSamples, FRAMES_PER_BUFFER);
     if(err && CHECK_OVERFLOW)
-        return handlePortAudioStreamOverflow(pas, err);
+        return handlePortAudioStreamFlowError(pas, err);
     else
         return 1;
 }
 
-    unsigned int handlePortAudioStreamOverflow(PortAudioStream *pas, PaError err)
+    unsigned int handlePortAudioStreamFlowError(PortAudioStream *pas, PaError err)
     {
         terminatePortAudioStream(pas);
         if(err & paInputOverflow)
@@ -123,12 +123,23 @@ unsigned int readPortAudioStream(PortAudioStream *pas)
         return 0;
     }
 
+unsigned int writePortAudioStream(PortAudioStream *pas)
+{
+    PaError err;
+    
+    err = Pa_WriteStream(pas->stream, pas->bufferedSamples, FRAMES_PER_BUFFER);
+    if(err && CHECK_UNDERFLOW)
+        return handlePortAudioStreamFlowError(pas, err);
+    else
+        return 1;
+}
+
 void closePortAudioStream(PortAudioStream *pas)
 {
     PaError err;
     
     err = Pa_StopStream(pas->stream);
     if(err != paNoError)
-        handlePortAudioStreamError(pas, err);
+        handlePortAudioStreamInitializationError(pas, err);
     terminatePortAudioStream(pas);
 }
