@@ -18,6 +18,7 @@ void initializeBuddyBox(BuddyBox *bb)
     bb->channelCount                = 0;
     bb->active                      = 1;
     
+    bb->localMinSample              = 0.0f;
     bb->localMaxSample              = 0.0f;
     bb->localMaxElapsedCount        = 0;
     bb->sampleCount                 = 0;
@@ -30,40 +31,39 @@ void initializeBuddyBox(BuddyBox *bb)
 
 void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize)
 {
-    float tmpLocalMaxSample, bufferSampleMagnitude;
+    float tmpLocalMinSample, tmpLocalMaxSample;
     unsigned int i, tmpLocalMaxElapsedCount;
     
     detectBuddyBoxTimeout(bb, buffer, bufferSize);
     
+    tmpLocalMinSample = 0.0f;
     tmpLocalMaxSample = 0.0f;
     tmpLocalMaxElapsedCount = 0;
     for (i = 0; bb->active && i < bufferSize; i++, bb->sampleCount++)
-    {
-        bufferSampleMagnitude = getBuddyBoxSampleMagnitude(buffer[i]);
-        
-        tmpLocalMaxSample = getBuddyBoxTmpLocalMaxSample(bufferSampleMagnitude, tmpLocalMaxSample);
+    {       
+        tmpLocalMinSample = getBuddyBoxTmpLocalMinSample(buffer[i], tmpLocalMinSample);
+        tmpLocalMaxSample = getBuddyBoxTmpLocalMaxSample(buffer[i], tmpLocalMaxSample);
         tmpLocalMaxElapsedCount = getBuddyBoxTmpLocalMaxElapsedCount(bb, tmpLocalMaxElapsedCount, bufferSize);
-        
-        if (isBuddyBoxSignalEdge(bb, bufferSampleMagnitude))
+        if (isBuddyBoxSignalEdge(bb, buffer[i]))
             processBuddyBoxSignalEdge(bb);
     }
     if (isBuddyBoxCalibrating(bb))
-        calibrateBuddyBox(bb, tmpLocalMaxSample, tmpLocalMaxElapsedCount);
+        calibrateBuddyBox(bb, tmpLocalMinSample, tmpLocalMaxSample, tmpLocalMaxElapsedCount);
 }
 
     void detectBuddyBoxTimeout(BuddyBox *bb, float* buffer, unsigned int bufferSize)
     {
         unsigned int i;
         for (i = 0; i < bufferSize; i++)
-            if (isBuddyBoxSignalAboveNoiseThreshold(getBuddyBoxSampleMagnitude(buffer[i])))
+            if (isBuddyBoxSignalAboveNoiseThreshold(buffer[i]))
                 return;
         if (!isBuddyBoxCalibrating(bb))
             handleBuddyBoxTimeout(bb);
     }
 
-        unsigned int isBuddyBoxSignalAboveNoiseThreshold(float bufferSampleMagnitude)
+        unsigned int isBuddyBoxSignalAboveNoiseThreshold(float bufferSample)
         {
-            return (bufferSampleMagnitude > SAMPLE_NOISE_THRESHOLD);
+            return (getBuddyBoxSampleMagnitude(bufferSample) > SAMPLE_NOISE_THRESHOLD);
         }
 
         void handleBuddyBoxTimeout(BuddyBox *bb)
@@ -77,9 +77,14 @@ void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize
         return fabs(sample);
     }
 
-    float getBuddyBoxTmpLocalMaxSample(float bufferSampleMagnitude, float tmpLocalMaxSample)
+    float getBuddyBoxTmpLocalMinSample(float bufferSample, float tmpLocalMinSample)
     {
-        return (bufferSampleMagnitude > tmpLocalMaxSample) ? bufferSampleMagnitude : tmpLocalMaxSample;
+        return (bufferSample < tmpLocalMinSample) ? bufferSample : tmpLocalMinSample;
+    }
+
+    float getBuddyBoxTmpLocalMaxSample(float bufferSample, float tmpLocalMaxSample)
+    {
+        return (bufferSample > tmpLocalMaxSample) ? bufferSample : tmpLocalMaxSample;
     }
 
     float getBuddyBoxTmpLocalMaxElapsedCount(BuddyBox *bb, unsigned int tmpLocalMaxElapsedCount, unsigned int bufferSize)
@@ -87,11 +92,11 @@ void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize
         return (bb->elapsedSampleCounts > tmpLocalMaxElapsedCount && bb->elapsedSampleCounts < bufferSize) ? bb->elapsedSampleCounts : tmpLocalMaxElapsedCount;
     }
 
-    unsigned int isBuddyBoxSignalEdge(BuddyBox *bb, float bufferSampleMagnitude)
+    unsigned int isBuddyBoxSignalEdge(BuddyBox *bb, float bufferSample)
     {
         unsigned int signalEdge;
         
-        if (isBuddyBoxRawSignalHigh(bb, bufferSampleMagnitude))
+        if (isBuddyBoxRawSignalHigh(bb, bufferSample))
         {
             signalEdge = (bb->wireSignal == SIGNAL_LOW) ? 1 : 0;
             bb->wireSignal = SIGNAL_HIGH;
@@ -104,9 +109,9 @@ void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize
         return signalEdge;
     }
 
-        unsigned int isBuddyBoxRawSignalHigh(BuddyBox *bb, float bufferSampleMagnitude)
+        unsigned int isBuddyBoxRawSignalHigh(BuddyBox *bb, float bufferSample)
         {
-            return (isBuddyBoxSignalAboveNoiseThreshold(bufferSampleMagnitude) && bufferSampleMagnitude > bb->localMaxSample / 2);
+            return (isBuddyBoxSignalAboveNoiseThreshold(bufferSample) && bufferSample > (bb->localMaxSample + bb->localMinSample) / 2);
         }
 
     void processBuddyBoxSignalEdge(BuddyBox *bb)
@@ -201,7 +206,7 @@ void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize
                 void processBuddyBoxPacket(BuddyBox *bb)
                 {
                     unsigned int i;
-                    
+
                     for (i = 0; i < MAX_CHANNELS; i++)
                         if (i < bb->currentSignalChannel)
                             printf("%d\t,", bb->signal[i]);
@@ -236,8 +241,9 @@ void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize
         return (bb->synchroFrameCount < CALIBRATION_PACKETS);
     }
 
-    void calibrateBuddyBox(BuddyBox *bb, float tmpLocalMaxSample, unsigned int tmpLocalMaxElapsedCount)
+    void calibrateBuddyBox(BuddyBox *bb, float tmpLocalMinSample, float tmpLocalMaxSample, unsigned int tmpLocalMaxElapsedCount)
     {
+        bb->localMinSample = tmpLocalMinSample;
         bb->localMaxSample = tmpLocalMaxSample;
         bb->localMaxElapsedCount = tmpLocalMaxElapsedCount;
     }

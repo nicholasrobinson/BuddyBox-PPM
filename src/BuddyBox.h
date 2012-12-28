@@ -26,6 +26,7 @@ typedef struct
     unsigned int active;
     
     unsigned int wireSignal;
+    float localMinSample;
     float localMaxSample;
     unsigned int localMaxElapsedCount;
     unsigned int sampleCount;
@@ -41,13 +42,14 @@ void initializeBuddyBox(BuddyBox* bb);
 
 void readBufferIntoBuddyBox(BuddyBox* bb, float* buffer, unsigned int bufferSize);
     void detectBuddyBoxTimeout(BuddyBox *bb, float* buffer, unsigned int bufferSize);
-        unsigned int isBuddyBoxSignalAboveNoiseThreshold(float bufferSampleMagnitude);
+        unsigned int isBuddyBoxSignalAboveNoiseThreshold(float bufferSample);
         void handleBuddyBoxTimeout(BuddyBox *bb);
     float getBuddyBoxSampleMagnitude(float sample);
-    float getBuddyBoxTmpLocalMaxSample(float bufferSampleMagnitude, float tmpLocalMaxSample);
+    float getBuddyBoxTmpLocalMinSample(float bufferSample, float tmpLocalMinSample);
+    float getBuddyBoxTmpLocalMaxSample(float bufferSample, float tmpLocalMaxSample);
     float getBuddyBoxTmpLocalMaxElapsedCount(BuddyBox *bb, unsigned int tmpLocalMaxElapsedCount, unsigned int bufferSize);
-    unsigned int isBuddyBoxSignalEdge(BuddyBox *bb, float bufferSampleMagnitude);
-        unsigned int isBuddyBoxRawSignalHigh(BuddyBox *bb, float bufferSampleMagnitude);
+    unsigned int isBuddyBoxSignalEdge(BuddyBox *bb, float bufferSample);
+        unsigned int isBuddyBoxRawSignalHigh(BuddyBox *bb, float bufferSample);
     void processBuddyBoxSignalEdge(BuddyBox *bb);
         void updateBuddyBoxElapsedCounts(BuddyBox *bb);
             unsigned int isBuddyBoxWireSignalHigh(BuddyBox *bb);
@@ -65,7 +67,7 @@ void readBufferIntoBuddyBox(BuddyBox* bb, float* buffer, unsigned int bufferSize
                 void targetNextBuddyBoxPacketChannel(BuddyBox *bb);
                 void handleInvalidBuddyBoxChannel(BuddyBox *bb);
     unsigned int isBuddyBoxCalibrating(BuddyBox *bb);
-    void calibrateBuddyBox(BuddyBox *bb, float tmpLocalMaxSample, unsigned int tmpLocalMaxElapsedCount);
+    void calibrateBuddyBox(BuddyBox *bb, float tmpLocalMinSample, float tmpLocalMaxSample, unsigned int tmpLocalMaxElapsedCount);
 
 void disconnectBuddyBox(BuddyBox *bb);
 
