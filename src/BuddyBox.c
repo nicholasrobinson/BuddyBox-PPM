@@ -10,6 +10,9 @@
 #include <stdio.h>
 #include <math.h>
 
+// THIS CAN BE REMOVED AFTER RAND() CALLS ARE REMOVED
+#include <stdlib.h>
+
 void initializeBuddyBox(BuddyBox *bb)
 {
     printf("Initializing Buddy Box...\n");
@@ -42,7 +45,7 @@ void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize
     tmpLocalMaxSample = 0.0f;
     tmpLocalMaxElapsedCount = 0;
     for (i = 0; bb->active && i < bufferSize; i++, bb->sampleReadCount++)
-    {       
+    {
         tmpLocalMinSample = getBuddyBoxTmpLocalMinSample(buffer[i], tmpLocalMinSample);
         tmpLocalMaxSample = getBuddyBoxTmpLocalMaxSample(buffer[i], tmpLocalMaxSample);
         tmpLocalMaxElapsedCount = getBuddyBoxTmpLocalMaxElapsedCount(bb, tmpLocalMaxElapsedCount, bufferSize);
@@ -253,15 +256,15 @@ void readBufferIntoBuddyBox(BuddyBox *bb, float* buffer, unsigned int bufferSize
 void writeBuddyBoxChannelsIntoBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int sampleRate)
 {
     unsigned int i, j, endJ, channel;
-    bb->signal[0] = 87;
-    bb->signal[1] = 138;
-    bb->signal[2] = 137;
-    bb->signal[3] = 138;
-    bb->signal[4] = 187;
-    bb->signal[5] = 117;
-    bb->signal[6] = 162;
-    bb->signal[7] = 182;
-    bb->signal[8] = 187;
+    bb->signal[0] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[1] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[2] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[3] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[4] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[5] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[6] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[7] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
+    bb->signal[8] = (rand() % 1200 + 500) * sampleRate / MICROSECONDS_PER_SECOND;
 
     for (i = 0; i < bb->overflowSampleCount; i++)
     {
@@ -284,12 +287,13 @@ void writeBuddyBoxChannelsIntoBuffer(BuddyBox *bb, float buffer[], unsigned int 
                 {
                     if (i + j < bufferSize)
                     {
-//printf("SEPARATOR %u: %u / %u - %f\n", channel, j, endJ, SIGNAL_HIGH_FLOAT);
+//printf("SEPARATOR %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_HIGH_FLOAT);
                         buffer[i + j] = SIGNAL_HIGH_FLOAT;
                         bb->sampleWriteCount++;
                     }
                     else
                     {
+//printf("[BUFF] SEPARATOR %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_HIGH_FLOAT);
                         bb->overflowPacket[i + j - bufferSize] = SIGNAL_HIGH_FLOAT;
                         bb->overflowSampleCount++;
                     }
@@ -300,12 +304,13 @@ void writeBuddyBoxChannelsIntoBuffer(BuddyBox *bb, float buffer[], unsigned int 
                 {
                     if (i + j < bufferSize)
                     {
-//printf("SIGNAL %u: %u / %u - %f\n", channel, j, endJ, SIGNAL_LOW_FLOAT);
+//printf("SIGNAL %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_LOW_FLOAT);
                         buffer[i + j] = SIGNAL_LOW_FLOAT;
                         bb->sampleWriteCount++;
                     }
                     else
                     {
+//printf("[BUFF] SIGNAL %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_LOW_FLOAT);
                         bb->overflowPacket[i + j - bufferSize] = SIGNAL_LOW_FLOAT;
                         bb->overflowSampleCount++;
                     }
@@ -316,12 +321,13 @@ void writeBuddyBoxChannelsIntoBuffer(BuddyBox *bb, float buffer[], unsigned int 
             {
                 if (i + j < bufferSize)
                 {
-//printf("SYNCHRO: %u / %u - %f\n", j, bufferSize, SIGNAL_LOW_FLOAT);
+//printf("SYNCHRO: %u / %u - %f\n", i + j, sampleRate * PACKET_DURATION / MICROSECONDS_PER_SECOND, SIGNAL_LOW_FLOAT);
                     buffer[i + j] = SIGNAL_LOW_FLOAT;
                     bb->sampleWriteCount++;
                 }
                 else
                 {
+//printf("[BUFF] SYNCHRO: %u / %u - %f\n", i + j, sampleRate * PACKET_DURATION / MICROSECONDS_PER_SECOND, SIGNAL_LOW_FLOAT);
                     bb->overflowPacket[i + j - bufferSize] = SIGNAL_LOW_FLOAT;
                     bb->overflowSampleCount++;
                 }
@@ -332,8 +338,8 @@ void writeBuddyBoxChannelsIntoBuffer(BuddyBox *bb, float buffer[], unsigned int 
         i += sampleRate * PACKET_DURATION / MICROSECONDS_PER_SECOND;
     }
     
-    for (i = 0; i < bufferSize; i++)
-        printf("%f\n",buffer[i]);
+//    for (i = 0; i < bufferSize; i++)
+//        printf("%f\n",buffer[i]);
 }
 
 void disconnectBuddyBox(BuddyBox *bb)

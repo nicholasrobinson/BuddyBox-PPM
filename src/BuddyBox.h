@@ -25,8 +25,8 @@ static const unsigned int PACKET_DURATION               = 20000;    // 20000 us
 static const unsigned int SEPARATOR_DURATION            = 400;      // 400 us
 static const unsigned int CHANNEL_MIN_DURATION          = 500;      // 500 us
 static const unsigned int CHANNEL_MAX_DURATION          = 1700;     // 1700 us
-static const float SIGNAL_HIGH_FLOAT                    = 0.75f;
-static const float SIGNAL_LOW_FLOAT                     = -0.23f;
+static const float SIGNAL_HIGH_FLOAT                    = -1.0f;    // Experimentally: -0.23f;
+static const float SIGNAL_LOW_FLOAT                     = 1.0f;     // Experimentally: 0.75f;
 
 typedef struct
 {
