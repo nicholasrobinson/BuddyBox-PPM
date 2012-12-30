@@ -27,7 +27,6 @@
 
 static const unsigned int FRAMES_PER_BUFFER     = 4096;
 static const unsigned int NUM_CHANNELS          = 1;
-static const unsigned int SAMPLE_SIZE           = sizeof(float);
 
 typedef struct
 {

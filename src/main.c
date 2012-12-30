@@ -25,8 +25,9 @@ int main(int argc, const char * argv[])
 {
     PortAudioStream pas;
     BuddyBox bb;
+    unsigned int sampleRate, i;
     
-    unsigned int sampleRate = (argc > 1) ? (unsigned int) strtol(argv[1], NULL, 0) : DEFAULT_SAMPLE_RATE;
+    sampleRate = (argc > 1) ? (unsigned int) strtol(argv[1], NULL, 0) : DEFAULT_SAMPLE_RATE;
     
     signal(SIGKILL, intHandler);
     signal(SIGINT, intHandler);
@@ -35,12 +36,17 @@ int main(int argc, const char * argv[])
     
     while(running)
     {
-        initializeBuddyBox(&bb);
+        initializeBuddyBox(&bb, sampleRate);
         
         while(running && bb.active && readPortAudioStream(&pas))
         {
-            readBufferIntoBuddyBox(&bb, pas.bufferedSamples, pas.bufferSize);
-            writeBuddyBoxChannelsIntoBuffer(&bb, pas.bufferedSamples, pas.bufferSize, sampleRate);
+            readBufferIntoBuddyBoxInputChannelBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
+            
+            for (i = 0; i < 9; i++)
+                setBuddyBoxOutputChannelDuration(&bb, i, rand() % 1200 + 500);
+            
+            writeBuddyBoxOutputChannelBufferIntoBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
+            
             writePortAudioStream(&pas);
         }
         

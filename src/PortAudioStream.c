@@ -27,13 +27,13 @@ void initializePortAudioStream(PortAudioStream *pas, unsigned int sampleRate)
     void allocatePortAudioStreamBuffer(PortAudioStream *pas)
     {
         pas->bufferSize = FRAMES_PER_BUFFER * NUM_CHANNELS;
-        pas->bufferedSamples = (float *) malloc(pas->bufferSize * SAMPLE_SIZE);
+        pas->bufferedSamples = (float *) malloc(pas->bufferSize * sizeof(float));
         if(pas->bufferedSamples == NULL)
         {
-            printf("Could not allocate record array.\n");
+            printf("PortAudioStream:\tCould Not Allocate Sample Buffer.\n");
             exit(1);
         }
-        memset(pas->bufferedSamples, 0, FRAMES_PER_BUFFER * NUM_CHANNELS * SAMPLE_SIZE);
+        memset(pas->bufferedSamples, 0, pas->bufferSize * sizeof(float));
     }
 
     void initializePortAudio(PortAudioStream *pas)
@@ -48,9 +48,9 @@ void initializePortAudioStream(PortAudioStream *pas, unsigned int sampleRate)
         void handlePortAudioStreamInitializationError(PortAudioStream *pas, PaError err)
         {
             terminatePortAudioStream(pas);
-            fprintf(stderr, "An error occured while using the portaudio stream\n");
-            fprintf(stderr, "Error number: %d\n", err);
-            fprintf(stderr, "Error message: %s\n", Pa_GetErrorText(err));
+            fprintf(stderr, "PortAudioStream:\tAn error occured.\n");
+            fprintf(stderr, "Error number:\t%d\n", err);
+            fprintf(stderr, "Error message:\t%s\n", Pa_GetErrorText(err));
             exit(-1);
         }
 
@@ -119,9 +119,9 @@ unsigned int readPortAudioStream(PortAudioStream *pas)
     {
         terminatePortAudioStream(pas);
         if(err & paInputOverflow)
-            fprintf(stderr, "Input Overflow.\n");
+            fprintf(stderr, "PortAudioStream:\tInput Overflow.\n");
         if(err & paOutputUnderflow)
-            fprintf(stderr, "Output Underflow.\n");
+            fprintf(stderr, "PortAudioStream:\tOutput Underflow.\n");
         return 0;
     }
 
