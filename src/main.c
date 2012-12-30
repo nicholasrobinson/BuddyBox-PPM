@@ -42,7 +42,8 @@ int main(int argc, const char * argv[])
         {
             readBufferIntoBuddyBoxInputChannelBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
             
-            for (i = 0; i < 9; i++)
+            bb.outputChannelCount = 9;
+            for (i = 0; i < bb.outputChannelCount; i++)
                 setBuddyBoxOutputChannelDuration(&bb, i, rand() % 1200 + 500);
             
             writeBuddyBoxOutputChannelBufferIntoBuffer(&bb, pas.bufferedSamples, pas.bufferSize);

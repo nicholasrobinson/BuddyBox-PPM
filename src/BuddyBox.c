@@ -275,7 +275,7 @@ void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsign
             channelDuration = CHANNEL_MAX_DURATION;
         else if (channelDuration < CHANNEL_MIN_DURATION)
             channelDuration = CHANNEL_MIN_DURATION;
-        bb->inputChannelBuffer[channel] = channelDuration * bb->sampleRate / MICROSECONDS_PER_SECOND;
+        bb->outputChannelBuffer[channel] = channelDuration * bb->sampleRate / MICROSECONDS_PER_SECOND;
     }
 }
 
@@ -297,7 +297,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
 //printf("LOOPING FOR %u, i=%d\n", bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND, i);
         while (j < bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND)
         {
-            if (channel < 9)//bb->inputChannelCount)
+            if (channel < bb->outputChannelCount)
             {
                 endJ = j + SEPARATOR_DURATION * bb->sampleRate / MICROSECONDS_PER_SECOND;
                 while (j < endJ)
@@ -316,7 +316,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
                     }
                     j++;
                 }
-                endJ = j + bb->inputChannelBuffer[channel];
+                endJ = j + bb->outputChannelBuffer[channel];
                 while (j < endJ)
                 {
                     if (i + j < bufferSize)
@@ -362,5 +362,6 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
 void disconnectBuddyBox(BuddyBox *bb)
 {
     bb->active = 0;
+    free(bb->outputOverflowBuffer);
     printf("BuddyBox:\tDisconnected.\n");
 }
