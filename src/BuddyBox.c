@@ -324,60 +324,60 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
             {
                 unsigned int channelSampleCount;
                 
-                channelSampleCount = writeBuddyBoxChannelSeperatorIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount);
-                
-                unsigned int endChannelSampleCount;
-                endChannelSampleCount = channelSampleCount + bb->outputChannelBuffer[channel];
-                for (; channelSampleCount < endChannelSampleCount; channelSampleCount++)
-                    writeBuddyBoxSignalToBufferOrOverflowBuffer(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount + channelSampleCount, SIGNAL_LOW_FLOAT);
-                
-//                channelSampleCount += writeBuddyBoxChannelDurationIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount + channelSampleCount, channelSampleCount + bb->outputChannelBuffer[channel]);
+                channelSampleCount = writeBuddyBoxChannelSeperatorIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount);                
+                channelSampleCount += writeBuddyBoxChannelDurationIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount + channelSampleCount, bb->outputChannelBuffer[channel]);
                 
                 return channelSampleCount;
             }
 
                 unsigned int writeBuddyBoxChannelSeperatorIntoBufferChannel(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int startBufferSample)
                 {
-                    unsigned int i;
-                    
-                    for (i = 0; i < SEPARATOR_DURATION * bb->sampleRate / MICROSECONDS_PER_SECOND; i++)
-                        writeBuddyBoxSignalToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample + i, SIGNAL_HIGH_FLOAT);
-                    
-                    return i;
+                    return writeBuddyBoxSignalsToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample, SEPARATOR_DURATION * bb->sampleRate / MICROSECONDS_PER_SECOND, SIGNAL_HIGH_FLOAT);
                 }
 
-                    void writeBuddyBoxSignalToBufferOrOverflowBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSample, float signal)
+                    unsigned int writeBuddyBoxSignalsToBufferOrOverflowBuffer(BuddyBox *bb, float* buffer, unsigned int bufferSize, unsigned int startBufferSample, unsigned int endBufferSampleOffset, float signal)
                     {
-                        if (bufferSample < bufferSize)
-                            writeBuddyBoxSignalToBuffer(bb, buffer, bufferSample, signal);
-                        else
-                            writeBuddyBoxSignalToOverflowBuffer(bb, bufferSample - bufferSize, signal);
+                        return writeBuddyBoxSignalsToBufferOrOverflowBufferWithoutComparatorOffset(bb, buffer, bufferSize, startBufferSample, endBufferSampleOffset, signal);
                     }
 
-                        void writeBuddyBoxSignalToBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSample, float signal)
+                        unsigned int writeBuddyBoxSignalsToBufferOrOverflowBufferWithoutComparatorOffset(BuddyBox *bb, float *buffer, unsigned int bufferSize, unsigned int startBufferSample, unsigned int endBufferSampleOffset, float signal)
                         {
-                            buffer[bufferSample] = signal;
-                            bb->outputSampleCount++;
+                            unsigned int i;
+                            
+                            for (i = 0; i < endBufferSampleOffset; i++)
+                                writeBuddyBoxSignalToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample + i, signal);
+                            
+                            return i;
                         }
 
-                        void writeBuddyBoxSignalToOverflowBuffer(BuddyBox *bb, unsigned int bufferSample, float signal)
-                        {
-                            bb->outputOverflowBuffer[bufferSample] = signal;
-                            bb->outputOverflowSampleCount++;
-                        }
+                            void writeBuddyBoxSignalToBufferOrOverflowBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSample, float signal)
+                            {
+                                if (bufferSample < bufferSize)
+                                    writeBuddyBoxSignalToBuffer(bb, buffer, bufferSample, signal);
+                                else
+                                    writeBuddyBoxSignalToOverflowBuffer(bb, bufferSample - bufferSize, signal);
+                            }
+
+                                void writeBuddyBoxSignalToBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSample, float signal)
+                                {
+                                    buffer[bufferSample] = signal;
+                                    bb->outputSampleCount++;
+                                }
+
+                                void writeBuddyBoxSignalToOverflowBuffer(BuddyBox *bb, unsigned int bufferSample, float signal)
+                                {
+                                    bb->outputOverflowBuffer[bufferSample] = signal;
+                                    bb->outputOverflowSampleCount++;
+                                }
 
                 unsigned int writeBuddyBoxChannelDurationIntoBufferChannel(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int startBufferSample, unsigned int endBufferSampleOffset)
                 {
-                    unsigned int i;
-                    
-                    for (i = 0; i < endBufferSampleOffset; i++)
-                        writeBuddyBoxSignalToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample + i, SIGNAL_LOW_FLOAT);
-                    
-                    return i;
+                    return writeBuddyBoxSignalsToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample, endBufferSampleOffset, SIGNAL_LOW_FLOAT);
                 }
 
             unsigned int writeBuddyBoxOutputChannelBufferIntoBufferSynchro(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int frameSampleCount)
             {
+//                return writeBuddyBoxSignalsToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample, SEPARATOR_DURATION * bb->sampleRate / MICROSECONDS_PER_SECOND, SIGNAL_HIGH_FLOAT);
                 unsigned int synchroSampleCount;
                 
                 for (synchroSampleCount = 0; frameSampleCount + synchroSampleCount < bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND; synchroSampleCount++)
