@@ -281,83 +281,97 @@ void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsign
 
 void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize)
 {
-    unsigned int i, j, endJ, channel;
+    unsigned int bufferSampleCount;
 
-    for (i = 0; i < bb->outputOverflowSampleCount; i++)
-    {
-        buffer[i] = bb->outputOverflowBuffer[i];
-    }
-    
+    copyBuddyBoxOverflowBufferIntoBuffer(bb, buffer);
+    bufferSampleCount = bb->outputOverflowSampleCount;
     bb->outputOverflowSampleCount = 0;
-    
-    while (i < bufferSize)
+    while (bufferSampleCount < bufferSize)
+        bufferSampleCount += writeBuddyBoxOutputChannelBufferIntoBufferFrame(bb, buffer, bufferSize, bufferSampleCount);
+}
+
+    void copyBuddyBoxOverflowBufferIntoBuffer(BuddyBox *bb, float* buffer)
     {
+        unsigned int i;
+
+        for (i = 0; i < bb->outputOverflowSampleCount; i++)
+            buffer[i] = bb->outputOverflowBuffer[i];
+    }
+
+    unsigned int writeBuddyBoxOutputChannelBufferIntoBufferFrame(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount)
+    {
+        unsigned int channel, frameSampleCount;
+        
         channel = 0;
-        j = 0;
-//printf("LOOPING FOR %u, i=%d\n", bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND, i);
-        while (j < bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND)
+        frameSampleCount = 0;
+        while (channel < bb->outputChannelCount)
         {
-            if (channel < bb->outputChannelCount)
+            frameSampleCount += writeBuddyBoxOutputChannelBufferIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount, frameSampleCount, channel);
+            channel++;
+        }
+        frameSampleCount += writeBuddyBoxOutputChannelBufferIntoBufferSynchro(bb, buffer, bufferSize, bufferSampleCount, frameSampleCount);
+        
+        return frameSampleCount;
+    }
+
+        unsigned int writeBuddyBoxOutputChannelBufferIntoBufferChannel(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int frameSampleCount, unsigned int channel)
+        {
+            unsigned int channelSampleCount, endChannelSampleCount;
+            
+            channelSampleCount = 0;
+            while (channelSampleCount < SEPARATOR_DURATION * bb->sampleRate / MICROSECONDS_PER_SECOND)
             {
-                endJ = j + SEPARATOR_DURATION * bb->sampleRate / MICROSECONDS_PER_SECOND;
-                while (j < endJ)
+                if (bufferSampleCount + frameSampleCount + channelSampleCount < bufferSize)
                 {
-                    if (i + j < bufferSize)
-                    {
-//printf("SEPARATOR %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_HIGH_FLOAT);
-                        buffer[i + j] = SIGNAL_HIGH_FLOAT;
-                        bb->outputSampleCount++;
-                    }
-                    else
-                    {
-//printf("[BUFF] SEPARATOR %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_HIGH_FLOAT);
-                        bb->outputOverflowBuffer[i + j - bufferSize] = SIGNAL_HIGH_FLOAT;
-                        bb->outputOverflowSampleCount++;
-                    }
-                    j++;
-                }
-                endJ = j + bb->outputChannelBuffer[channel];
-                while (j < endJ)
-                {
-                    if (i + j < bufferSize)
-                    {
-//printf("SIGNAL %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_LOW_FLOAT);
-                        buffer[i + j] = SIGNAL_LOW_FLOAT;
-                        bb->outputSampleCount++;
-                    }
-                    else
-                    {
-//printf("[BUFF] SIGNAL %u: %u / %u - %f\n", channel, i + j, endJ - j, SIGNAL_LOW_FLOAT);
-                        bb->outputOverflowBuffer[i + j - bufferSize] = SIGNAL_LOW_FLOAT;
-                        bb->outputOverflowSampleCount++;
-                    }
-                    j++;
-                }
-            }
-            else
-            {
-                if (i + j < bufferSize)
-                {
-//printf("SYNCHRO: %u / %u - %f\n", i + j, bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND, SIGNAL_LOW_FLOAT);
-                    buffer[i + j] = SIGNAL_LOW_FLOAT;
+                    buffer[bufferSampleCount + frameSampleCount + channelSampleCount] = SIGNAL_HIGH_FLOAT;
                     bb->outputSampleCount++;
                 }
                 else
                 {
-//printf("[BUFF] SYNCHRO: %u / %u - %f\n", i + j, bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND, SIGNAL_LOW_FLOAT);
-                    bb->outputOverflowBuffer[i + j - bufferSize] = SIGNAL_LOW_FLOAT;
+                    bb->outputOverflowBuffer[bufferSampleCount + frameSampleCount + channelSampleCount - bufferSize] = SIGNAL_HIGH_FLOAT;
                     bb->outputOverflowSampleCount++;
                 }
-                j++;
+                channelSampleCount++;
             }
-            channel++;
+            endChannelSampleCount = channelSampleCount + bb->outputChannelBuffer[channel];
+            while (channelSampleCount < endChannelSampleCount)
+            {
+                if (bufferSampleCount + frameSampleCount + channelSampleCount < bufferSize)
+                {
+                    buffer[bufferSampleCount + frameSampleCount + channelSampleCount] = SIGNAL_LOW_FLOAT;
+                    bb->outputSampleCount++;
+                }
+                else
+                {
+                    bb->outputOverflowBuffer[bufferSampleCount + frameSampleCount + channelSampleCount - bufferSize] = SIGNAL_LOW_FLOAT;
+                    bb->outputOverflowSampleCount++;
+                }
+                channelSampleCount++;
+            }
+            return channelSampleCount;
         }
-        i += bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND;
-    }
-    
-//    for (i = 0; i < bufferSize; i++)
-//        printf("%f\n",buffer[i]);
-}
+
+        unsigned int writeBuddyBoxOutputChannelBufferIntoBufferSynchro(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int frameSampleCount)
+        {
+            unsigned int synchroSampleCount = 0;
+            
+            while (frameSampleCount + synchroSampleCount < bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND)
+            {
+                if (bufferSampleCount + frameSampleCount + synchroSampleCount < bufferSize)
+                {
+                    buffer[bufferSampleCount + frameSampleCount + synchroSampleCount] = SIGNAL_LOW_FLOAT;
+                    bb->outputSampleCount++;
+                }
+                else
+                {
+                    bb->outputOverflowBuffer[bufferSampleCount + frameSampleCount + synchroSampleCount - bufferSize] = SIGNAL_LOW_FLOAT;
+                    bb->outputOverflowSampleCount++;
+                }
+                synchroSampleCount++;
+            }
+            
+            return synchroSampleCount;
+        }
 
 void disconnectBuddyBox(BuddyBox *bb)
 {

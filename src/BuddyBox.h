@@ -90,6 +90,10 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox* bb, float* buffer, unsig
 void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsigned int channelDuration);
 
 void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize);
+    void copyBuddyBoxOverflowBufferIntoBuffer(BuddyBox *bb, float* buffer);
+    unsigned int writeBuddyBoxOutputChannelBufferIntoBufferFrame(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount);
+        unsigned int writeBuddyBoxOutputChannelBufferIntoBufferChannel(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int frameSampleCount, unsigned int channel);
+        unsigned int writeBuddyBoxOutputChannelBufferIntoBufferSynchro(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int frameSampleCount);
 
 void disconnectBuddyBox(BuddyBox *bb);
 
