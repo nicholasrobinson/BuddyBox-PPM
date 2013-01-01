@@ -87,7 +87,8 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox* bb, float* buffer, unsig
     unsigned int isBuddyBoxInputCalibrating(BuddyBox *bb);
     void calibrateBuddyBoxInput(BuddyBox *bb, float localMinSample, float localMaxSample, unsigned int localMaxElapsedCount);
 
-void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsigned int channelDuration);
+void setBuddyBoxOutputChannelValue(BuddyBox *bb, unsigned int channel, float channelValue);
+    void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsigned int channelDuration);
 
 void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize);
     unsigned int writeBuddyBoxOverflowBufferIntoBuffer(BuddyBox *bb, float* buffer);

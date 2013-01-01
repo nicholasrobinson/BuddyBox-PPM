@@ -44,7 +44,7 @@ int main(int argc, const char * argv[])
             
             bb.outputChannelCount = 9;
             for (i = 0; i < bb.outputChannelCount; i++)
-                setBuddyBoxOutputChannelDuration(&bb, i, rand() % 1200 + 500);
+                setBuddyBoxOutputChannelValue(&bb, i, rand() % 1000 / 1000.0f);
             
             writeBuddyBoxOutputChannelBufferIntoBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
             

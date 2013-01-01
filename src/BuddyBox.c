@@ -267,17 +267,25 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
         bb->maxElapsedInputSampleCount = localMaxElapsedCount;
     }
 
-void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsigned int channelDuration)
+void setBuddyBoxOutputChannelValue(BuddyBox *bb, unsigned int channel, float channelValue)
 {
-    if (channel < MAX_CHANNELS)
-    {
-        if (channelDuration > CHANNEL_MAX_DURATION)
-            channelDuration = CHANNEL_MAX_DURATION;
-        else if (channelDuration < CHANNEL_MIN_DURATION)
-            channelDuration = CHANNEL_MIN_DURATION;
-        bb->outputChannelBuffer[channel] = channelDuration * bb->sampleRate / MICROSECONDS_PER_SECOND;
-    }
+    unsigned int channelDuration;
+    
+    channelDuration = channelValue / 1.0f * (CHANNEL_MAX_DURATION - CHANNEL_MIN_DURATION) + CHANNEL_MIN_DURATION;
+    setBuddyBoxOutputChannelDuration(bb, channel, channelDuration);
 }
+
+    void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsigned int channelDuration)
+    {
+        if (channel < MAX_CHANNELS)
+        {
+            if (channelDuration > CHANNEL_MAX_DURATION)
+                channelDuration = CHANNEL_MAX_DURATION;
+            else if (channelDuration < CHANNEL_MIN_DURATION)
+                channelDuration = CHANNEL_MIN_DURATION;
+            bb->outputChannelBuffer[channel] = channelDuration * bb->sampleRate / MICROSECONDS_PER_SECOND;
+        }
+    }
 
 void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize)
 {
