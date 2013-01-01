@@ -95,8 +95,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
         unsigned int writeBuddyBoxOutputChannelBufferIntoBufferChannels(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount);
             unsigned int writeBuddyBoxOutputChannelBufferIntoBufferChannel(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int channelsSampleCount, unsigned int channel);
                 unsigned int writeBuddyBoxChannelSeperatorIntoBufferChannel(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int startBufferSample);
-                    unsigned int writeBuddyBoxSignalsToBufferOrOverflowBuffer(BuddyBox *bb, float* buffer, unsigned int bufferSize, unsigned int startBufferSample, unsigned int endBufferSampleOffset, float signal);
-                        unsigned int writeBuddyBoxSignalsToBufferOrOverflowBufferWithoutComparatorOffset(BuddyBox *bb, float *buffer, unsigned int bufferSize, unsigned int startBufferSample, unsigned int endBufferSampleOffset, float signal);
+                        unsigned int writeBuddyBoxSignalsToBufferOrOverflowBuffer(BuddyBox *bb, float *buffer, unsigned int bufferSize, unsigned int startBufferSample, unsigned int comparatorOffset, unsigned int endBufferSampleOffset, float signal);
                             void writeBuddyBoxSignalToBufferOrOverflowBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSample, float signal);
                                 void writeBuddyBoxSignalToBuffer(BuddyBox *bb, float buffer[], unsigned int bufferSample, float signal);
                                 void writeBuddyBoxSignalToOverflowBuffer(BuddyBox *bb, unsigned int bufferSample, float signal);
