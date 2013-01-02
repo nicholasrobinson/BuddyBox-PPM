@@ -38,6 +38,8 @@ void initializeBuddyBox(BuddyBox *bb, unsigned int sampleRate)
         bb->outputChannelBuffer[i]  = 0;
     bb->minInputSample              = 0.0f;
     bb->maxInputSample              = 0.0f;
+    for (i = 0; i < MAX_CHANNELS; i++)
+        bb->inputChannelValues[i]  = 0.0f;
     allocateOutputOverflowBuffer(bb);
 }
 
@@ -189,17 +191,12 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
 
                     unsigned int isBuddyBoxInputChannelCountValid(BuddyBox *bb)
                     {
-                        return (getBuddyBoxInputChannel(bb) == bb->inputChannelCount);
+                        return (bb->inputChannel == bb->inputChannelCount);
                     }
-
-                        unsigned int getBuddyBoxInputChannel(BuddyBox *bb)
-                        {
-                            return bb->inputChannel - 1;
-                        }
 
                     void storeBuddyBoxInputChannelCount(BuddyBox *bb)
                     {
-                        bb->inputChannelCount = getBuddyBoxInputChannel(bb);
+                        bb->inputChannelCount = bb->inputChannel;
                     }
 
                     void handleInvalidBuddyBoxInputChannelCount(BuddyBox *bb)
@@ -226,11 +223,8 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                 {
                     unsigned int i;
 
-                    for (i = 0; i < MAX_CHANNELS; i++)
-                        if (i < bb->inputChannel)
-                            printf("%u\t,", bb->inputChannelBuffer[i]);
-                    printf("%u\n", bb->inputSynchroFrameCount);
-                    
+                    for (i = 0; i < bb->inputChannelCount; i++)
+                        bb->inputChannelValues[i] = (float) (bb->inputChannelBuffer[i] * MICROSECONDS_PER_SECOND / bb->sampleRate - CHANNEL_MIN_DURATION) / (CHANNEL_MAX_DURATION - CHANNEL_MIN_DURATION);
                     bb->badInputFrameCount = 0;
                 }
 
@@ -320,7 +314,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
         unsigned int writeBuddyBoxOutputChannelBufferIntoBufferChannels(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount)
         {
             unsigned int channel, channelsSampleCount;
-            
+
             channelsSampleCount = 0;
             for (channel = 0; channel < bb->outputChannelCount; channel++)
                 channelsSampleCount += writeBuddyBoxOutputChannelBufferIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount, channelsSampleCount, channel);

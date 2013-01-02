@@ -31,7 +31,6 @@ static const float SIGNAL_LOW_FLOAT                     = 1.0f;     // Experimen
 typedef struct
 {
     unsigned int active;
-    
     unsigned int sampleRate;
     unsigned int input;
     unsigned int lastInput;
@@ -51,6 +50,7 @@ typedef struct
     unsigned int outputChannelBuffer[MAX_CHANNELS];
     float minInputSample;
     float maxInputSample;
+    float inputChannelValues[MAX_CHANNELS];
     float* outputOverflowBuffer;
 } BuddyBox;
 
@@ -75,7 +75,6 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox* bb, float* buffer, unsig
                 unsigned int isBuddyBoxInputSynchroFrame(BuddyBox *bb);
                 void processBuddyBoxInputSynchroFrame(BuddyBox *bb);
                     unsigned int isBuddyBoxInputChannelCountValid(BuddyBox *bb);
-                        unsigned int getBuddyBoxInputChannel(BuddyBox *bb);
                     void storeBuddyBoxInputChannelCount(BuddyBox *bb);
                     void handleInvalidBuddyBoxInputChannelCount(BuddyBox *bb);
                         unsigned int isBuddyBoxInputViable(BuddyBox *bb);

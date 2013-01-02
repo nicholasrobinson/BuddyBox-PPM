@@ -40,8 +40,18 @@ int main(int argc, const char * argv[])
         
         while(running && bb.active && readPortAudioStream(&pas))
         {
+            // Input
             readBufferIntoBuddyBoxInputChannelBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
             
+            if (!isBuddyBoxInputCalibrating(&bb))
+            {
+                printf("%u - ", bb.inputChannelCount);
+                for (i = 0; i < bb.inputChannelCount; i++)
+                    printf("%f\t,", bb.inputChannelValues[i]);
+                printf("%u\n", bb.inputSynchroFrameCount);
+            }
+
+            // Output
             bb.outputChannelCount = 9;
             for (i = 0; i < bb.outputChannelCount; i++)
                 setBuddyBoxOutputChannelValue(&bb, i, rand() % 1000 / 1000.0f);
