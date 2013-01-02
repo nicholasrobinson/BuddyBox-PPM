@@ -221,10 +221,16 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
 
                 void processBuddyBoxInputFrame(BuddyBox *bb)
                 {
-                    unsigned int i;
+                    unsigned int i, chanelDuration;
 
                     for (i = 0; i < bb->inputChannelCount; i++)
-                        bb->inputChannelValues[i] = (float) (bb->inputChannelBuffer[i] * MICROSECONDS_PER_SECOND / bb->sampleRate - CHANNEL_MIN_DURATION) / (CHANNEL_MAX_DURATION - CHANNEL_MIN_DURATION);
+                    {
+                        chanelDuration = bb->inputChannelBuffer[i] * MICROSECONDS_PER_SECOND / bb->sampleRate;
+                        if (chanelDuration < CHANNEL_MIN_DURATION)
+                            bb->inputChannelValues[i] = 0.0f;
+                        else
+                            bb->inputChannelValues[i] = (float) (chanelDuration - CHANNEL_MIN_DURATION) / (CHANNEL_MAX_DURATION - CHANNEL_MIN_DURATION);
+                    }
                     bb->badInputFrameCount = 0;
                 }
 
