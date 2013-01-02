@@ -101,6 +101,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
                                 void writeBuddyBoxSignalToOverflowBuffer(BuddyBox *bb, unsigned int bufferSample, float signal);
             unsigned int writeBuddyBoxChannelDurationIntoBufferChannel(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int startBufferSample, unsigned int endBufferSampleOffset);
         unsigned int writeBuddyBoxOutputChannelBufferIntoBufferSynchro(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int frameSampleCount);
+            unsigned int writeBuddyBoxSynchroIntoBufferSynchro(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int startBufferSample, unsigned int comparatorOffset);
 
 void disconnectBuddyBox(BuddyBox *bb);
 

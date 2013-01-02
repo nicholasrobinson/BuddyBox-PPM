@@ -304,7 +304,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
     unsigned int writeBuddyBoxOutputChannelBufferIntoBufferFrame(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount)
     {
         unsigned int frameSampleCount;
-        
+
         frameSampleCount = writeBuddyBoxOutputChannelBufferIntoBufferChannels(bb, buffer, bufferSize, bufferSampleCount);
         frameSampleCount += writeBuddyBoxOutputChannelBufferIntoBufferSynchro(bb, buffer, bufferSize, bufferSampleCount, frameSampleCount);
         
@@ -340,7 +340,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
                     unsigned int writeBuddyBoxSignalsToBufferOrOverflowBuffer(BuddyBox *bb, float *buffer, unsigned int bufferSize, unsigned int startBufferSample, unsigned int comparatorOffset, unsigned int endBufferSampleOffset, float signal)
                     {
                         unsigned int i;
-                        
+
                         for (i = 0; i + comparatorOffset < endBufferSampleOffset; i++)
                             writeBuddyBoxSignalToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample + i, signal);
                         
@@ -374,8 +374,18 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
 
             unsigned int writeBuddyBoxOutputChannelBufferIntoBufferSynchro(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int bufferSampleCount, unsigned int frameSampleCount)
             {
-                return writeBuddyBoxSignalsToBufferOrOverflowBuffer(bb, buffer, bufferSize, bufferSampleCount + frameSampleCount, frameSampleCount, bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND, SIGNAL_LOW_FLOAT);
+                unsigned int synchroSampleCount;
+                
+                synchroSampleCount = writeBuddyBoxChannelSeperatorIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + frameSampleCount);
+                synchroSampleCount += writeBuddyBoxSynchroIntoBufferSynchro(bb, buffer, bufferSize, bufferSampleCount + frameSampleCount + synchroSampleCount, frameSampleCount);
+                
+                return synchroSampleCount;
             }
+
+                unsigned int writeBuddyBoxSynchroIntoBufferSynchro(BuddyBox *bb, float buffer[], unsigned int bufferSize, unsigned int startBufferSample, unsigned int comparatorOffset)
+                {
+                    return writeBuddyBoxSignalsToBufferOrOverflowBuffer(bb, buffer, bufferSize, startBufferSample, comparatorOffset, bb->sampleRate * FRAME_DURATION / MICROSECONDS_PER_SECOND, SIGNAL_LOW_FLOAT);
+                }
 
 void disconnectBuddyBox(BuddyBox *bb)
 {
