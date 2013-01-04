@@ -81,8 +81,9 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox* bb, float* buffer, unsig
                     void targetNextBuddyBoxInputFrame(BuddyBox *bb);
                 unsigned int isBuddyBoxInputChannelValid(BuddyBox *bb);
                 void processBuddyBoxInputFrame(BuddyBox *bb);
-                void targetNextBuddyBoxInputChannel(BuddyBox *bb);
+                void storeBuddyBoxInputChannel(BuddyBox *bb);
                 void handleInvalidBuddyBoxInputChannel(BuddyBox *bb);
+                void targetNextBuddyBoxInputChannel(BuddyBox *bb);
     unsigned int isBuddyBoxInputCalibrating(BuddyBox *bb);
     void calibrateBuddyBoxInput(BuddyBox *bb, float localMinSample, float localMaxSample, unsigned int localMaxElapsedCount);
 

@@ -160,10 +160,17 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
             {
                 if (isBuddyBoxInputSynchroFrame(bb))
                     processBuddyBoxInputSynchroFrame(bb);
-                else if (isBuddyBoxInputChannelValid(bb))
+                else
+                {
+                    if (!isBuddyBoxInputCalibrating(bb))
+                    {
+                        if (isBuddyBoxInputChannelValid(bb))
+                            storeBuddyBoxInputChannel(bb);
+                        else
+                            handleInvalidBuddyBoxInputChannel(bb);
+                    }
                     targetNextBuddyBoxInputChannel(bb);
-                else if (!isBuddyBoxInputCalibrating(bb))
-                    handleInvalidBuddyBoxInputChannel(bb);
+                }
             }
 
                 unsigned int isBuddyBoxInputSynchroFrame(BuddyBox *bb)
@@ -176,15 +183,12 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                     bb->inputSynchroFrameCount++;
                     if (!isBuddyBoxInputCalibrating(bb))
                     {
-                        if (isBuddyBoxInputChannelCountValid(bb))
-                        {
-                            processBuddyBoxInputFrame(bb);
-                            storeBuddyBoxInputChannelCount(bb);
-                        }
-                        else
+                        if (!isBuddyBoxInputChannelCountValid(bb))
                             handleInvalidBuddyBoxInputChannelCount(bb);
+                        else
+                            processBuddyBoxInputFrame(bb);
                     }
-                    else
+                    else if (isBuddyBoxInputChannelValid(bb))
                         storeBuddyBoxInputChannelCount(bb);
                     targetNextBuddyBoxInputFrame(bb);
                 }
@@ -204,10 +208,15 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                         bb->badInputFrameCount++;
                         if (!isBuddyBoxInputViable(bb))
                         {
-                            printf("BuddyBox:\tInput Channel Count Changed.%d\n", bb->inputSynchroFrameCount);
+                            printf("BuddyBox:\tInput Channel Count Changed from %d to %d.\n", bb->inputChannelCount, bb->inputChannel);
                             disconnectBuddyBox(bb);
                         }   
                     }
+
+                        unsigned int isBuddyBoxInputViable(BuddyBox *bb)
+                        {
+                            return (bb->badInputFrameCount < BAD_FRAME_THRESHOLD);
+                        }
 
                     void targetNextBuddyBoxInputFrame(BuddyBox *bb)
                     {
@@ -234,12 +243,6 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                     bb->badInputFrameCount = 0;
                 }
 
-                void targetNextBuddyBoxInputChannel(BuddyBox *bb)
-                {
-                    bb->inputChannelBuffer[bb->inputChannel] = bb->elapsedInputSampleCounts;
-                    bb->inputChannel++;
-                }
-
                 void handleInvalidBuddyBoxInputChannel(BuddyBox *bb)
                 {
                     bb->badInputFrameCount++;
@@ -248,11 +251,17 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                         printf("BuddyBox:\tInvalid Input Channel Received.\n");
                         disconnectBuddyBox(bb);
                     }
+                    targetNextBuddyBoxInputFrame(bb);
                 }
 
-                unsigned int isBuddyBoxInputViable(BuddyBox *bb)
+                void storeBuddyBoxInputChannel(BuddyBox *bb)
                 {
-                    return (bb->badInputFrameCount < BAD_FRAME_THRESHOLD);
+                    bb->inputChannelBuffer[bb->inputChannel] = bb->elapsedInputSampleCounts;
+                }
+
+                void targetNextBuddyBoxInputChannel(BuddyBox *bb)
+                {
+                    bb->inputChannel++;
                 }
 
     unsigned int isBuddyBoxInputCalibrating(BuddyBox *bb)
@@ -332,7 +341,7 @@ void writeBuddyBoxOutputChannelBufferIntoBuffer(BuddyBox *bb, float buffer[], un
             {
                 unsigned int channelSampleCount;
                 
-                channelSampleCount = writeBuddyBoxChannelSeperatorIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount);                
+                channelSampleCount = writeBuddyBoxChannelSeperatorIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount);
                 channelSampleCount += writeBuddyBoxChannelDurationIntoBufferChannel(bb, buffer, bufferSize, bufferSampleCount + channelsSampleCount + channelSampleCount, bb->outputChannelBuffer[channel]);
                 
                 return channelSampleCount;

@@ -21,11 +21,33 @@ void intHandler(int sig) {
     running = 0;
 }
 
+void generateOutput(BuddyBox *bb)
+{
+    unsigned int i;
+    
+    bb->outputChannelCount = 9;
+    for (i = 0; i < bb->outputChannelCount; i++)
+        setBuddyBoxOutputChannelValue(bb, i, rand() % 800 / 1000.0f + 0.1f);
+}
+
+void displayInput(BuddyBox *bb)
+{
+    unsigned int i;
+    
+    if (bb->active && !isBuddyBoxInputCalibrating(bb))
+    {
+        printf("%u - ", bb->inputChannelCount);
+        for (i = 0; i < bb->inputChannelCount; i++)
+            printf("%f\t,", bb->inputChannelValues[i]);
+        printf("%u\n", bb->inputSynchroFrameCount);
+    }
+}
+
 int main(int argc, const char * argv[])
 {
     PortAudioStream pas;
     BuddyBox bb;
-    unsigned int sampleRate, i;
+    unsigned int sampleRate;
     
     sampleRate = (argc > 1) ? (unsigned int) strtol(argv[1], NULL, 0) : DEFAULT_SAMPLE_RATE;
     
@@ -38,27 +60,15 @@ int main(int argc, const char * argv[])
     {
         initializeBuddyBox(&bb, sampleRate);
         
-        while(running && bb.active && readPortAudioStream(&pas))
+        while(running && bb.active && writePortAudioStream(&pas) && readPortAudioStream(&pas))
         {
-            // Input
             readBufferIntoBuddyBoxInputChannelBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
-            
-            if (!isBuddyBoxInputCalibrating(&bb))
-            {
-                printf("%u - ", bb.inputChannelCount);
-                for (i = 0; i < bb.inputChannelCount; i++)
-                    printf("%f\t,", bb.inputChannelValues[i]);
-                printf("%u\n", bb.inputSynchroFrameCount);
-            }
-
-            // Output
-            bb.outputChannelCount = 9;
-            for (i = 0; i < bb.outputChannelCount; i++)
-                setBuddyBoxOutputChannelValue(&bb, i, rand() % 1000 / 1000.0f);
             
             writeBuddyBoxOutputChannelBufferIntoBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
             
-            writePortAudioStream(&pas);
+            generateOutput(&bb);
+            
+            displayInput(&bb);
         }
         
         sleep(1);
