@@ -237,6 +237,8 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                         chanelDuration = bb->inputChannelBuffer[i] * MICROSECONDS_PER_SECOND / bb->sampleRate;
                         if (chanelDuration < CHANNEL_MIN_DURATION)
                             bb->inputChannelValues[i] = 0.0f;
+                        else if (chanelDuration > CHANNEL_MAX_DURATION)
+                            bb->inputChannelValues[i] = 1.0f;
                         else
                             bb->inputChannelValues[i] = (float) (chanelDuration - CHANNEL_MIN_DURATION) / (CHANNEL_MAX_DURATION - CHANNEL_MIN_DURATION);
                     }
