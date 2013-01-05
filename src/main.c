@@ -27,7 +27,7 @@ void generateOutput(BuddyBox *bb)
     
     bb->outputChannelCount = 9;
     for (i = 0; i < bb->outputChannelCount; i++)
-        setBuddyBoxOutputChannelValue(bb, i, rand() % 800 / 1000.0f + 0.1f);
+        setBuddyBoxOutputChannelValue(bb, i, bb->inputChannelValues[i]);
 }
 
 void displayInput(BuddyBox *bb)
@@ -36,7 +36,6 @@ void displayInput(BuddyBox *bb)
     
     if (bb->active && !isBuddyBoxInputCalibrating(bb))
     {
-        printf("%u - ", bb->inputChannelCount);
         for (i = 0; i < bb->inputChannelCount; i++)
             printf("%f\t,", bb->inputChannelValues[i]);
         printf("%u\n", bb->inputSynchroFrameCount);
