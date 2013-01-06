@@ -162,13 +162,10 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                     processBuddyBoxInputSynchroFrame(bb);
                 else
                 {
-                    if (!isBuddyBoxInputCalibrating(bb))
-                    {
-                        if (isBuddyBoxInputChannelValid(bb))
-                            storeBuddyBoxInputChannel(bb);
-                        else
-                            handleInvalidBuddyBoxInputChannel(bb);
-                    }
+                    if (isBuddyBoxInputChannelValid(bb))
+                        storeBuddyBoxInputChannel(bb);
+                    else if (!isBuddyBoxInputCalibrating(bb))
+                        handleInvalidBuddyBoxInputChannel(bb);
                     targetNextBuddyBoxInputChannel(bb);
                 }
             }
@@ -245,6 +242,11 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                     bb->badInputFrameCount = 0;
                 }
 
+                void storeBuddyBoxInputChannel(BuddyBox *bb)
+                {
+                    bb->inputChannelBuffer[bb->inputChannel] = bb->elapsedInputSampleCounts;
+                }
+
                 void handleInvalidBuddyBoxInputChannel(BuddyBox *bb)
                 {
                     bb->badInputFrameCount++;
@@ -254,11 +256,6 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
                         disconnectBuddyBox(bb);
                     }
                     targetNextBuddyBoxInputFrame(bb);
-                }
-
-                void storeBuddyBoxInputChannel(BuddyBox *bb)
-                {
-                    bb->inputChannelBuffer[bb->inputChannel] = bb->elapsedInputSampleCounts;
                 }
 
                 void targetNextBuddyBoxInputChannel(BuddyBox *bb)
