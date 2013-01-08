@@ -23,7 +23,6 @@
 #define CHECK_UNDERFLOW (0)                                 // Not checking for underflow
 
 #define PA_SAMPLE_TYPE      paFloat32
-#define PA_INPUT_DEVICE     1                               // Line In - could also be: Pa_GetDefaultInputDevice()
 
 static const unsigned int FRAMES_PER_BUFFER     = 4096;
 static const unsigned int NUM_CHANNELS          = 1;

@@ -64,7 +64,7 @@ The above output indicates the raw output of 9 channels from my JR PCM9xII Tx, r
 
 # Notes
 
-* You may need to change "PA_INPUT_DEVICE" in "PortAudioStream.h" to suit your audio input  device.
+* You may need to change the default input device via your operating system's control panel to suit your audio input device.
 * You may need to tune "DEFAULT_SAMPLE_RATE" via command-line to suit your audio input device (defaults to 124kHz if not specified). A higher sample rate will yield a higher resolution on each channel's output. For example 44.1kHz sample rate -> resolution of ~36 per channel, whereas 192kHz sample rate -> resolution of ~154 per channel.
 * Depending on your sound card's characteristics, you may need to tweak "BAD_PACKET_THRESHOLD" and "SAMPLE_NOISE_THRESHOLD" in "BuddyBox.h"
 

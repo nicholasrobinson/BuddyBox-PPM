@@ -67,7 +67,7 @@ void initializePortAudioStream(PortAudioStream *pas, unsigned int sampleRate)
 
     void configurePortAudioInputParameters(PaStreamParameters *inputParameters)
     {
-        inputParameters->device = PA_INPUT_DEVICE;
+        inputParameters->device = Pa_GetDefaultInputDevice();
         inputParameters->channelCount = NUM_CHANNELS;
         inputParameters->sampleFormat = PA_SAMPLE_TYPE;
         inputParameters->suggestedLatency = Pa_GetDeviceInfo(inputParameters->device)->defaultHighInputLatency ;
