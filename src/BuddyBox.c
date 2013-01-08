@@ -18,6 +18,7 @@ void initializeBuddyBox(BuddyBox *bb, unsigned int sampleRate)
     printf("BuddyBox:\tInitializing.\n");
     
     bb->active                      = 1;
+    bb->negativeShift               = 0;
     bb->sampleRate                  = sampleRate;
     bb->input                       = SIGNAL_LOW;
     bb->lastInput                   = SIGNAL_LOW;
@@ -58,24 +59,26 @@ void initializeBuddyBox(BuddyBox *bb, unsigned int sampleRate)
 void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsigned int bufferSize)
 {
     float localMinSample, localMaxSample;
-    unsigned int i, localMaxElapsedCount;
+    unsigned int i, localMaxElapsedCount, localMaxElapsedInput;
     
     detectBuddyBoxInputTimeout(bb, buffer, bufferSize);
     
     localMinSample = 0.0f;
     localMaxSample = 0.0f;
     localMaxElapsedCount = 0;
+    localMaxElapsedInput = SIGNAL_HIGH;
     for (i = 0; bb->active && i < bufferSize; i++, bb->inputSampleCount++)
     {
+        processBuddyBoxRawInput(bb, buffer[i]);
         localMinSample = getBuddyBoxLocalMinSample(buffer[i], localMinSample);
         localMaxSample = getBuddyBoxLocalMaxSample(buffer[i], localMaxSample);
         localMaxElapsedCount = getBuddyBoxLocalMaxElapsedInputSampleCount(bb, localMaxElapsedCount, bufferSize);
-        processBuddyBoxRawInput(bb, buffer[i]);
+        localMaxElapsedInput = getBuddyBoxLocalMaxElapsedInput(bb, localMaxElapsedInput, localMaxElapsedCount);
         if (isBuddyBoxInputEdge(bb, buffer[i]))
             processBuddyBoxInputEdge(bb);
     }
     if (isBuddyBoxInputCalibrating(bb))
-        calibrateBuddyBoxInput(bb, localMinSample, localMaxSample, localMaxElapsedCount);
+        calibrateBuddyBoxInput(bb, localMinSample, localMaxSample, localMaxElapsedCount, localMaxElapsedInput);
 }
 
     void detectBuddyBoxInputTimeout(BuddyBox *bb, float* buffer, unsigned int bufferSize)
@@ -119,6 +122,11 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
         return (bb->elapsedInputSampleCounts > localMaxElapsedInputSampleCount && bb->elapsedInputSampleCounts < bufferSize) ? bb->elapsedInputSampleCounts : localMaxElapsedInputSampleCount;
     }
 
+    unsigned int getBuddyBoxLocalMaxElapsedInput(BuddyBox *bb, unsigned int localMaxElapsedInput, unsigned int localMaxElapsedInputSampleCount)
+    {
+        return (bb->elapsedInputSampleCounts >= localMaxElapsedInputSampleCount) ? bb->input : localMaxElapsedInput;
+    }
+
     void processBuddyBoxRawInput(BuddyBox *bb, float bufferSample)
     {
         bb->lastInput = bb->input;
@@ -132,7 +140,10 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
 
         unsigned int isBuddyBoxRawInputHigh(BuddyBox *bb, float bufferSample)
         {
-            return (isBuddyBoxRawInputAboveNoiseThreshold(bufferSample) && bufferSample > (bb->maxInputSample + bb->minInputSample) / 2);
+            if (bb->negativeShift)
+                return (isBuddyBoxRawInputAboveNoiseThreshold(bufferSample) && bufferSample < (bb->maxInputSample + bb->minInputSample) / 2);
+            else
+                return (isBuddyBoxRawInputAboveNoiseThreshold(bufferSample) && bufferSample > (bb->maxInputSample + bb->minInputSample) / 2);
         }
 
     void processBuddyBoxInputEdge(BuddyBox *bb)
@@ -268,11 +279,12 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox *bb, float* buffer, unsig
         return (bb->inputSynchroFrameCount < CALIBRATION_FRAMES);
     }
 
-    void calibrateBuddyBoxInput(BuddyBox *bb, float localMinSample, float localMaxSample, unsigned int localMaxElapsedCount)
+    void calibrateBuddyBoxInput(BuddyBox *bb, float localMinSample, float localMaxSample, unsigned int localMaxElapsedCount, unsigned int localMaxElapsedInput)
     {
         bb->minInputSample = localMinSample;
         bb->maxInputSample = localMaxSample;
         bb->maxElapsedInputSampleCount = localMaxElapsedCount;
+        bb->negativeShift = (localMaxElapsedInput == SIGNAL_LOW);
     }
 
 void setBuddyBoxOutputChannelValue(BuddyBox *bb, unsigned int channel, float channelValue)

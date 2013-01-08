@@ -25,7 +25,7 @@ void generateOutput(BuddyBox *bb)
 {
     unsigned int i;
     
-    bb->outputChannelCount = 9;
+    bb->outputChannelCount = bb->inputChannelCount;
     for (i = 0; i < bb->outputChannelCount; i++)
         setBuddyBoxOutputChannelValue(bb, i, bb->inputChannelValues[i]);
 }
