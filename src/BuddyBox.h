@@ -65,8 +65,8 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox* bb, float* buffer, unsig
     float getBuddyBoxSampleMagnitude(float sample);
     float getBuddyBoxLocalMinSample(float bufferSample, float localMinSample);
     float getBuddyBoxLocalMaxSample(float bufferSample, float localMaxSample);
-    float getBuddyBoxLocalMaxElapsedInputSampleCount(BuddyBox *bb, unsigned int localMaxElapsedInputSampleCount, unsigned int bufferSize);
-    unsigned int getBuddyBoxLocalMaxElapsedInput(BuddyBox *bb, unsigned int localMaxElapsedInput, unsigned int localMaxElapsedInputSampleCount);
+    float getBuddyBoxLocalMaxElapsedInputSampleCount(BuddyBox *bb, unsigned int localMaxElapsedCount, unsigned int bufferSize);
+    unsigned int getBuddyBoxLocalNegativeShift(BuddyBox *bb, unsigned int localMaxElapsedCount, float bufferSample);
     void processBuddyBoxRawInput(BuddyBox *bb, float bufferSample);
     unsigned int isBuddyBoxInputEdge(BuddyBox *bb, float bufferSample);
         unsigned int isBuddyBoxRawInputHigh(BuddyBox *bb, float bufferSample);
@@ -87,7 +87,7 @@ void readBufferIntoBuddyBoxInputChannelBuffer(BuddyBox* bb, float* buffer, unsig
                 void handleInvalidBuddyBoxInputChannel(BuddyBox *bb);
                 void targetNextBuddyBoxInputChannel(BuddyBox *bb);
     unsigned int isBuddyBoxInputCalibrating(BuddyBox *bb);
-    void calibrateBuddyBoxInput(BuddyBox *bb, float localMinSample, float localMaxSample, unsigned int localMaxElapsedCount, unsigned int localMaxElapsedInput);
+    void calibrateBuddyBoxInput(BuddyBox *bb, float localMinSample, float localMaxSample, unsigned int localMaxElapsedCount, unsigned int localNegativeShift);
 
 void setBuddyBoxOutputChannelValue(BuddyBox *bb, unsigned int channel, float channelValue);
     void setBuddyBoxOutputChannelDuration(BuddyBox *bb, unsigned int channel, unsigned int channelDuration);
