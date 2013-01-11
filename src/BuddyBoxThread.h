@@ -30,6 +30,8 @@ void stopBuddyBoxThread();
 
 void joinBuddyBoxThread(PASBuddyBox *pasBB);
 
+void cleanupBuddyBoxThread(PASBuddyBox *pasBB);
+
 void* runBuddyBoxThread(void *arguments);
 
 #endif

@@ -38,6 +38,11 @@ void joinBuddyBoxThread(PASBuddyBox *pasBB)
     pthread_join(pasBB->buddyBoxThread, NULL);
 }
 
+void cleanupBuddyBoxThread(PASBuddyBox *pasBB)
+{
+    closePortAudioStream(&pasBB->pas);
+}
+
 void* runBuddyBoxThread(void *arguments)
 {
     PASBuddyBox *pasBB = (PASBuddyBox *) arguments;

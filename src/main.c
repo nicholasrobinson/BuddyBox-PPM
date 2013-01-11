@@ -77,7 +77,7 @@ int main(int argc, const char * argv[])
         sleep(1);
     }
     
-    closePortAudioStream(&pasBB.pas);
+    cleanupBuddyBoxThread(&pasBB);
     
     printf("Program Halted...\n");
 }
