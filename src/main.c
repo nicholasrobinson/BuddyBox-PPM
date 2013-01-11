@@ -6,19 +6,23 @@
 //  Copyright (c) 2012 Nicholas Robinson. All rights reserved.
 //
 
+#include "BuddyBoxThread.h"
+#include "PortAudioStream.h"
+#include "BuddyBox.h"
+
 #include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "PortAudioStream.h"
-#include "BuddyBox.h"
 
 static const unsigned int DEFAULT_SAMPLE_RATE = 124000;
 
 static unsigned int running = 1;
+static int killsig = 0;
 
 void intHandler(int sig) {
     running = 0;
+    killsig = sig;
 }
 
 void generateOutput(BuddyBox *bb)
@@ -44,36 +48,36 @@ void displayInput(BuddyBox *bb)
 
 int main(int argc, const char * argv[])
 {
-    PortAudioStream pas;
-    BuddyBox bb;
-    unsigned int sampleRate;
-    
-    sampleRate = (argc > 1) ? (unsigned int) strtol(argv[1], NULL, 0) : DEFAULT_SAMPLE_RATE;
-    
     signal(SIGKILL, intHandler);
     signal(SIGINT, intHandler);
     
-    initializePortAudioStream(&pas, sampleRate);
+    PASBuddyBox pasBB;
+    
+    pasBB.sampleRate = (argc > 1) ? (unsigned int) strtol(argv[1], NULL, 0) : DEFAULT_SAMPLE_RATE;
+    
+    initializeBuddyBoxThread(&pasBB);
     
     while(running)
-    {
-        initializeBuddyBox(&bb, sampleRate);
+    {   
+        startBuddyBoxThread(&pasBB);
         
-        while(running && bb.active && writePortAudioStream(&pas) && readPortAudioStream(&pas))
+        while(running && pasBB.bb.active)
         {
-            readBufferIntoBuddyBoxInputChannelBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
+            generateOutput(&pasBB.bb);
             
-            writeBuddyBoxOutputChannelBufferIntoBuffer(&bb, pas.bufferedSamples, pas.bufferSize);
+            displayInput(&pasBB.bb);
             
-            generateOutput(&bb);
-            
-            displayInput(&bb);
+            usleep(100000);
         }
+        
+        stopBuddyBoxThread();
+        
+        joinBuddyBoxThread(&pasBB);
         
         sleep(1);
     }
     
-    closePortAudioStream(&pas);
+    closePortAudioStream(&pasBB.pas);
     
     printf("Program Halted...\n");
 }
