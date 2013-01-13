@@ -7,8 +7,6 @@
 //
 
 #include "BuddyBoxThread.h"
-#include "PortAudioStream.h"
-#include "BuddyBox.h"
 
 #include <signal.h>
 #include <stdlib.h>
@@ -18,32 +16,29 @@
 static const unsigned int DEFAULT_SAMPLE_RATE = 124000;
 
 static unsigned int running = 1;
-static int killsig = 0;
 
 void intHandler(int sig) {
     running = 0;
-    killsig = sig;
 }
 
-void generateOutput(BuddyBox *bb)
+void generateOutput(PASBuddyBox *pasBB)
 {
-    unsigned int i;
+    unsigned int i, outputChannelCount;
     
-    bb->outputChannelCount = bb->inputChannelCount;
-    for (i = 0; i < bb->outputChannelCount; i++)
-        setBuddyBoxOutputChannelValue(bb, i, bb->inputChannelValues[i]);
+    outputChannelCount = getBuddyBoxThreadInputChannelCount(pasBB);
+    setBuddyBoxThreadOutputChannelCount(pasBB, outputChannelCount);
+    for (i = 0; i < outputChannelCount; i++)
+        setBuddyBoxThreadOutputChannelValue(pasBB, i, getBuddyBoxThreadInputChannelValue(pasBB, i));
 }
 
-void displayInput(BuddyBox *bb)
+void displayInput(PASBuddyBox *pasBB)
 {
-    unsigned int i;
+    unsigned int i, inputChannelCount;
     
-    if (bb->active && !isBuddyBoxInputCalibrating(bb))
-    {
-        for (i = 0; i < bb->inputChannelCount; i++)
-            printf("%f\t,", bb->inputChannelValues[i]);
-        printf("%u\n", bb->inputSynchroFrameCount);
-    }
+    inputChannelCount = getBuddyBoxThreadInputChannelCount(pasBB);
+    for (i = 0; i < inputChannelCount; i++)
+        printf("%f\t", getBuddyBoxThreadInputChannelValue(pasBB, i));
+    printf("\n");
 }
 
 int main(int argc, const char * argv[])
@@ -61,20 +56,19 @@ int main(int argc, const char * argv[])
     {   
         startBuddyBoxThread(&pasBB);
         
-        while(running && pasBB.bb.active)
+        while(running && isBuddyBoxThreadRunning(&pasBB))
         {
-            generateOutput(&pasBB.bb);
+            generateOutput(&pasBB);
             
-            displayInput(&pasBB.bb);
+            if (isBuddyBoxThreadCalibrated(&pasBB))
+                displayInput(&pasBB);
             
             usleep(100000);
         }
         
-        stopBuddyBoxThread();
+        stopBuddyBoxThread(&pasBB);
         
         joinBuddyBoxThread(&pasBB);
-        
-        sleep(1);
     }
     
     cleanupBuddyBoxThread(&pasBB);
