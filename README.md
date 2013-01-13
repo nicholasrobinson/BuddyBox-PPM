@@ -40,12 +40,12 @@ The first two applications are self explanatory (and likely the most useful), pr
     
     (Plug in your transmitter cable: Tx first, line-in / microphone-in second)
     
-    0.174167	,0.503333	,0.503333	,0.503333	,0.840000	,0.369167	,0.671667	,0.503333	,0.840000	,51
-    0.174167	,0.503333	,0.503333	,0.503333	,0.840000	,0.369167	,0.671667	,0.503333	,0.840000	,53
-    0.174167	,0.503333	,0.503333	,0.503333	,0.840000	,0.375833	,0.671667	,0.510000	,0.840000	,54
-    0.167500	,0.510000	,0.510000	,0.503333	,0.833333	,0.375833	,0.678333	,0.510000	,0.840000	,56
-    0.167500	,0.510000	,0.510000	,0.510000	,0.840000	,0.375833	,0.671667	,0.503333	,0.840000	,57
-    0.167500	,0.503333	,0.503333	,0.510000	,0.840000	,0.369167	,0.671667	,0.503333	,0.840000	,59
+    0.174167	,0.503333	,0.503333	,0.503333	,0.840000	,0.369167	,0.671667	,0.503333	,0.840000
+    0.174167	,0.503333	,0.503333	,0.503333	,0.840000	,0.369167	,0.671667	,0.503333	,0.840000
+    0.174167	,0.503333	,0.503333	,0.503333	,0.840000	,0.375833	,0.671667	,0.510000	,0.840000
+    0.167500	,0.510000	,0.510000	,0.503333	,0.833333	,0.375833	,0.678333	,0.510000	,0.840000
+    0.167500	,0.510000	,0.510000	,0.510000	,0.840000	,0.375833	,0.671667	,0.503333	,0.840000
+    0.167500	,0.503333	,0.503333	,0.510000	,0.840000	,0.369167	,0.671667	,0.503333	,0.840000
     
     (ctrl-c pressed)
     
@@ -53,7 +53,7 @@ The first two applications are self explanatory (and likely the most useful), pr
     
 ### Sample Output Explanation
 
-The above output indicates the raw output of 9 channels from my JR PCM9xII Tx, represented by the first 9 columns. The final column is an incremental sequential packet number.
+The above output indicates the raw output of 9 channels from my JR PCM9xII Tx, represented by the first 9 columns.
 
 ## References
     
