@@ -16,6 +16,8 @@ void initializeBuddyBoxThread(PASBuddyBox *pasBB)
 {    
     initializePortAudioStream(&pasBB->pas, pasBB->sampleRate);
     pasBB->running = 0;
+    pasBB->inputEnabled = 1;
+    pasBB->outputEnabled = 1;
 }
 
 void startBuddyBoxThread(PASBuddyBox *pasBB)
@@ -46,11 +48,15 @@ void* runBuddyBoxThread(void *arguments)
 {
     PASBuddyBox *pasBB = (PASBuddyBox *) arguments;
     
-    while(pasBB->running && pasBB->bb.active && writePortAudioStream(&pasBB->pas) && readPortAudioStream(&pasBB->pas))
+    while(pasBB->running && pasBB->bb.active &&
+          (!pasBB->outputEnabled || writePortAudioStream(&pasBB->pas)) &&
+          (!pasBB->inputEnabled || readPortAudioStream(&pasBB->pas)))
     {
-        readBufferIntoBuddyBoxInputChannelBuffer(&pasBB->bb, pasBB->pas.bufferedSamples, pasBB->pas.bufferSize);
+        if (pasBB->inputEnabled)
+            readBufferIntoBuddyBoxInputChannelBuffer(&pasBB->bb, pasBB->pas.bufferedSamples, pasBB->pas.bufferSize);
         
-        writeBuddyBoxOutputChannelBufferIntoBuffer(&pasBB->bb, pasBB->pas.bufferedSamples, pasBB->pas.bufferSize);
+        if (pasBB->outputEnabled)
+            writeBuddyBoxOutputChannelBufferIntoBuffer(&pasBB->bb, pasBB->pas.bufferedSamples, pasBB->pas.bufferSize);
     }
     pasBB->running = 0;
     
@@ -85,4 +91,24 @@ unsigned int getBuddyBoxThreadInputChannelCount(PASBuddyBox *pasBB)
 float getBuddyBoxThreadInputChannelValue(PASBuddyBox *pasBB, unsigned int channel)
 {
     return pasBB->bb.inputChannelValues[channel];
+}
+
+void disableBuddyBoxThreadInput(PASBuddyBox *pasBB)
+{
+    pasBB->inputEnabled = 0;
+}
+
+void enableBuddyBoxThreadInput(PASBuddyBox *pasBB)
+{
+    pasBB->inputEnabled = 1;
+}
+
+void disableBuddyBoxThreadOutput(PASBuddyBox *pasBB)
+{
+    pasBB->outputEnabled = 0;
+}
+
+void enableBuddyBoxThreadOutput(PASBuddyBox *pasBB)
+{
+    pasBB->outputEnabled = 1;
 }

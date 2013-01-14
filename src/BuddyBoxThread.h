@@ -21,6 +21,8 @@ typedef struct
     pthread_t buddyBoxThread;
     unsigned int sampleRate;
     unsigned int running;
+    unsigned int inputEnabled;
+    unsigned int outputEnabled;
 } PASBuddyBox;
 
 void initializeBuddyBoxThread(PASBuddyBox *pasBB);
@@ -46,5 +48,13 @@ void setBuddyBoxThreadOutputChannelValue(PASBuddyBox *pasBB, unsigned int channe
 unsigned int getBuddyBoxThreadInputChannelCount(PASBuddyBox *pasBB);
 
 float getBuddyBoxThreadInputChannelValue(PASBuddyBox *pasBB, unsigned int channel);
+
+void disableBuddyBoxThreadInput(PASBuddyBox *pasBB);
+
+void enableBuddyBoxThreadInput(PASBuddyBox *pasBB);
+
+void disableBuddyBoxThreadOutput(PASBuddyBox *pasBB);
+
+void enableBuddyBoxThreadOutput(PASBuddyBox *pasBB);
 
 #endif
