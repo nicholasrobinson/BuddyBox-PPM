@@ -29,12 +29,10 @@ static const unsigned int NUM_CHANNELS          = 1;
 
 typedef struct
 {
-    // Public
     unsigned int sampleRate;
     float* bufferedSamples;
     unsigned int bufferSize;
     
-    // Private
     PaStream* stream;
 } PortAudioStream;
 
