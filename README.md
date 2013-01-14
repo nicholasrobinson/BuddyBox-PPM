@@ -68,7 +68,7 @@ The above output indicates the raw output of 9 channels from my JR PCM9xII Tx, r
 * You may need to tune "DEFAULT_SAMPLE_RATE" via command-line to suit your audio input device (defaults to 124kHz if not specified). A higher sample rate will yield a higher resolution on each channel's output. For example 44.1kHz sample rate -> resolution of ~36 per channel, whereas 192kHz sample rate -> resolution of ~154 per channel.
 * Depending on your sound card's characteristics, you may need to tweak "BAD_PACKET_THRESHOLD" and "SAMPLE_NOISE_THRESHOLD" in "BuddyBox.h"
 
-Please let me know if you find this useful or come up with any novel implementations. Whilst this driver and the supplied "example" implementation could be used directly it is perhaps most usefully placed in a separate thread, sharing a pointer to "pas.signal", allowing real-time access to each channel's input/output. Examples coming soon...
+Please let me know if you find this useful or come up with any novel implementations.
 
 Enjoy!
 
