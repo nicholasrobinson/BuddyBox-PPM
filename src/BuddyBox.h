@@ -12,21 +12,22 @@
 #define MAXUINT                 (0xffffffff)
 #define MICROSECONDS_PER_SECOND (1000000)
 
-static const unsigned int MIN_CHANNELS                  = 5;
-static const unsigned int MAX_CHANNELS                  = 20;
-static const unsigned int SIGNAL_HIGH                   = 1;
-static const unsigned int SIGNAL_LOW                    = 0;
-static const unsigned int CALIBRATION_FRAMES            = 50;       // @50 Frames per second -> ~1 second calibrating
-static const unsigned int BAD_FRAME_THRESHOLD           = 10;
-static const unsigned int OVERFLOW_SAMPLES              = 4096;
-static const float SIGNAL_NOISE_THRESHOLD               = 0.1f;
+#define MIN_CHANNELS                  5
+#define MAX_CHANNELS                  20
+#define SIGNAL_HIGH                   1
+#define SIGNAL_LOW                    0
 
-static const unsigned int FRAME_DURATION                = 20000;    // 20000 us
-static const unsigned int SEPARATOR_DURATION            = 400;      // 400 us
-static const unsigned int CHANNEL_MIN_DURATION          = 500;      // 500 us
-static const unsigned int CHANNEL_MAX_DURATION          = 1700;     // 1700 us
-static const float SIGNAL_HIGH_FLOAT                    = 1.0f;    // Experimentally: 0.75f;
-static const float SIGNAL_LOW_FLOAT                     = -1.0f;     // Experimentally: -0.23f;
+#define CALIBRATION_FRAMES            50
+#define BAD_FRAME_THRESHOLD           10
+#define OVERFLOW_SAMPLES              4096
+#define SIGNAL_NOISE_THRESHOLD        0.1f
+
+#define FRAME_DURATION                20000
+#define SEPARATOR_DURATION            400
+#define CHANNEL_MIN_DURATION          500
+#define CHANNEL_MAX_DURATION          1700
+#define SIGNAL_HIGH_FLOAT             1.0f
+#define SIGNAL_LOW_FLOAT              -1.0f
 
 typedef struct
 {
